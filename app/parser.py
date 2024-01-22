@@ -1,7 +1,8 @@
-from bs4 import BeautifulSoup
-import requests
 from datetime import date
 from re import findall, compile
+
+import requests
+from bs4 import BeautifulSoup
 
 
 def get_planned_outages():
@@ -15,8 +16,8 @@ def get_planned_outages():
         links = soup.findAll('a', class_='dp-module-upcoming-modal-disabled')
 
         for l in links:
-            if findall(fr'отключение электроэнергии [0]*{today.day}\S*?\.[0]*{today.month}\S*?\.{today.year}', l.text):
-                #print(l.text, l.attrs)
+            if findall(fr'отключение электроэнергии [0]*{today.day}\S*?\.0*{today.month}\S*?\.{today.year}', l.text):
+                # print(l.text, l.attrs)
                 resp = requests.get('https://sevenergo.net' + l.attrs['href'])
                 if resp.status_code == 200:
                     soup = BeautifulSoup(resp.text, 'lxml')
@@ -29,7 +30,8 @@ def get_planned_outages():
 
 def current_outages():
     outages = ''
-    months = ['января', 'февраля', 'марта', 'апреля', 'мая', 'июня', 'июля', 'август', 'сентября', 'октября', 'ноября', 'декабря']
+    months = ['января', 'февраля', 'марта', 'апреля', 'мая', 'июня', 'июля', 'август', 'сентября', 'октября', 'ноября',
+              'декабря']
     resp = requests.get('https://sevenergo.net/news/incident.html')
     if resp.status_code == 200:
         today = date.today()
@@ -53,4 +55,3 @@ def current_outages():
 
 if __name__ == '__main__':
     print(type(get_planned_outages()[0][-1]))
-
