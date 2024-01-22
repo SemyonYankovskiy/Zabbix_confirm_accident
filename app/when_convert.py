@@ -46,16 +46,3 @@ def add_intermediate_dates(dates: List[str]) -> List[str]:
 
     all_dates.append('.'.join([str(i).zfill(2) for i in end_date]))
     return all_dates
-
-
-when = "Дата\n\n19.01.2024 08:00 - 16:00\n"
-when2 = "Дата\n\n01.11.2023 08:00 - 03.11.2023 17:00\n"
-when3 = "Дата\n\n01.11.2023 - 03.11.2023 08:00 - 17:00\n"
-when4 = "06.07.2023 по 14.07.2023 с 08:30 до 17:30"
-when5 = "с 23:00 03.07.2023г. до 06:00 04.07.2023г."
-
-print(str_to_datetime(when))
-print(str_to_datetime(when2))
-print(str_to_datetime(when3))
-print(str_to_datetime(when4))
-print(str_to_datetime(when5))
