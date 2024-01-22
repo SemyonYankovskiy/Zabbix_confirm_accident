@@ -1,10 +1,10 @@
 import re
-from typing import List
+from typing import List, Tuple
 
 from bs4.element import Tag
 
 
-def address_convert(addresses: Tag):
+def address_convert(addresses: Tag) -> List[Tuple[str, str]]:
     result = []
     town = ""
     for paragraph in addresses.findAll("p"):
@@ -27,7 +27,7 @@ def address_convert(addresses: Tag):
         else:
             town = ""
 
-        result.append([address, houses])
+        result.append((address, houses))
     return result
 
 
