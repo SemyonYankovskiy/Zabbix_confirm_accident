@@ -1,6 +1,6 @@
 import bs4
 from app.parser import get_planned_outages
-from app.address_convert import address_convert, house_splitter
+from app.address_convert import address_divider, house_splitter
 from app.when_convert import str_to_datetime
 import json
 
@@ -9,7 +9,7 @@ text = get_planned_outages()
 list_of_outages = []
 for outages in text:
     list_of_time = str_to_datetime(outages[1])
-    addresses = address_convert(bs4.BeautifulSoup(str(outages[2]), 'lxml'))
+    addresses = address_divider(bs4.BeautifulSoup(str(outages[2]), 'lxml'))
     houses_list = []
     address = ""
     for address, houses in addresses:

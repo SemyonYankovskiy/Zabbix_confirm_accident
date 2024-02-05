@@ -3,8 +3,7 @@ from typing import List, Tuple
 
 from bs4.element import Tag
 
-
-def address_convert(addresses: Tag) -> List[Tuple[str, str]]:
+def address_divider(addresses: Tag) -> List[Tuple[str, str]]:
     result = []
     town = ""
     for paragraph in addresses.findAll("p"):
@@ -54,3 +53,22 @@ def house_splitter(houses: str) -> List[str]:
             ext_address.append(item)
 
     return ext_address
+
+
+def adress_converter(address: str) -> str:
+    # Убираем кавычки и лишние символы
+    cleaned_adress = address.replace("«", "").replace("»", "").replace("уч.", "").replace("кад.", "")
+
+    # Проверяем, какой тип адреса
+    if "СТ" in cleaned_adress:
+        return cleaned_adress.replace("СТ-", "СТ ").strip()
+    elif "ул." in cleaned_adress:
+        return cleaned_adress.replace("ул.", "ул.").strip()
+    elif "туп." in cleaned_adress:
+        return cleaned_adress.replace("туп.", "туп.").strip()
+    elif "с/з" in cleaned_adress:
+        return cleaned_adress.replace("с/з", "с/з").strip()
+    elif "СНТ" in cleaned_adress:
+        return cleaned_adress.replace("СНТ-", "СНТ ").strip()
+    else:
+        return cleaned_adress
