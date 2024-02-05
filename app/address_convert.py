@@ -36,6 +36,7 @@ def house_splitter(houses: str) -> List[str]:
     for item in arr:
         item = item.replace("(чет)", "")
         item = item.replace("(нечет)", "")
+        item = item.replace(".", "")
         item = item.strip()
         clean_address.append(item)
 

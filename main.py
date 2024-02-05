@@ -1,6 +1,6 @@
 import bs4
 from app.parser import get_planned_outages
-from app.address_convert import address_divider, house_splitter
+from app.address_convert import address_divider, house_splitter, adress_converter
 from app.when_convert import str_to_datetime
 import json
 
@@ -13,9 +13,10 @@ for outages in text:
     houses_list = []
     address = ""
     for address, houses in addresses:
+        correct_address = adress_converter(address)
         houses_list = house_splitter(houses)
         outages_json = {
-            "address": address,
+            "address": correct_address,
             "houses": houses_list,
             "time_from": str(list_of_time[0]),
             "time_to": str(list_of_time[1]),
