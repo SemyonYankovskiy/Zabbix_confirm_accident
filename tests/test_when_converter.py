@@ -40,6 +40,17 @@ class TestWhenConverter(TestCase):
                 datetime(2023, 11, 3, 17, 0, 0, 0),
             ]
         )
+        self.assertListEqual(
+            str_to_datetime("Дата\n\n01-03.11.2023 08:00 - 17:00\n"),
+            [
+                datetime(2023, 11, 1, 8, 0, 0, 0),
+                datetime(2023, 11, 1, 17, 0, 0, 0),
+                datetime(2023, 11, 2, 8, 0, 0, 0),
+                datetime(2023, 11, 2, 17, 0, 0, 0),
+                datetime(2023, 11, 3, 8, 0, 0, 0),
+                datetime(2023, 11, 3, 17, 0, 0, 0),
+            ]
+        )
 
         self.assertListEqual(
             str_to_datetime("06.07.2023 по 14.07.2023 с 08:30 до 17:30"),
@@ -81,3 +92,5 @@ class TestWhenConverter(TestCase):
                 datetime(2023, 7, 4, 6, 0, 0, 0),
             ]
         )
+
+
