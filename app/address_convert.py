@@ -1,43 +1,5 @@
 import re
-from datetime import datetime
-from typing import List, Tuple, Sequence
-
-
-def update_datetime_pair(
-    pair: Sequence[datetime], time_correction: str
-) -> List[datetime]:
-    """
-    Обновляет диапазон времени через переданную строку, в которой находится уточнение временного диапазона.
-    :param pair: Пара дат.
-    :param time_correction: Строка поправки времени для пары.
-    :return: Пара новых дат.
-    """
-
-    match = re.search(r"с\s+(\d\d:\d\d)\s+до\s+(\d\d:\d\d)", time_correction)
-    if not match:
-        return list(pair)
-
-    new_pair: List[datetime] = []
-    time_from, time_to = match.groups()
-
-    correction_time: List[Tuple[int, int]] = []
-    for time in (time_from, time_to):
-        hour, minutes = time.split(":")
-        correction_time.append((int(hour), int(minutes)))
-
-    for i, (d, (new_hour, new_minute)) in enumerate(zip(pair, correction_time)):
-        d: datetime
-        # Всегда указываем день такой же как и в начале, чтобы не было перехода через ночь аварии
-        new_pair.append(
-            datetime(
-                year=d.year,
-                month=d.month,
-                day=pair[0].day,
-                hour=new_hour,
-                minute=new_minute,
-            )
-        )
-    return new_pair
+from typing import List, Tuple
 
 
 def divide_by_address_and_house_numbers(text: str) -> Tuple[str, str]:

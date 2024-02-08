@@ -2,8 +2,8 @@ import json
 import logging
 
 from app.address_convert import house_splitter, address_cleaner
+from app.datetime_convert import str_to_datetime_ranges
 from app.parser import get_planned_outage_data, get_planned_outages_urls, content_parser
-from app.when_convert import str_to_datetime_ranges
 
 logging.basicConfig(
     level=logging.DEBUG,

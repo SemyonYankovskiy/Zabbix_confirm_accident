@@ -1,7 +1,7 @@
 from datetime import datetime
 from unittest import TestCase
 
-from app.address_convert import update_datetime_pair
+from app.datetime_convert import update_datetime_pair
 
 
 class TestUpdateDateTimePair(TestCase):

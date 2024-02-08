@@ -7,10 +7,8 @@ import bs4
 import requests
 from bs4 import BeautifulSoup
 
-from app.address_convert import (
-    update_datetime_pair,
-    divide_by_address_and_house_numbers,
-)
+from app.address_convert import divide_by_address_and_house_numbers
+from app.datetime_convert import update_datetime_pair
 
 
 def get_planned_outages_urls(site: str = "https://sevenergo.net") -> List[str]:

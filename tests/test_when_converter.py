@@ -1,7 +1,7 @@
 from datetime import datetime
 from unittest import TestCase
 
-from app.when_convert import str_to_datetime_ranges
+from app.datetime_convert import str_to_datetime_ranges
 
 
 class TestWhenConverter(TestCase):
