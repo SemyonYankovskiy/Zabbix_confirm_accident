@@ -167,6 +167,42 @@ class TestParser3(TestParser):
                 ],
             },
             {
+                "address": "СНТ Ялтинское кольцо",
+                "houses": [],
+                "times": [
+                    (
+                        datetime(2024, 2, 5, 8, 0),
+                        datetime(2024, 2, 5, 17, 0),
+                    ),
+                    (
+                        datetime(2024, 2, 6, 8, 0),
+                        datetime(2024, 2, 6, 17, 0),
+                    ),
+                    (
+                        datetime(2024, 2, 7, 8, 0),
+                        datetime(2024, 2, 7, 17, 0),
+                    ),
+                ],
+            },
+            {
+                "address": "СТ Рубин",
+                "houses": [],
+                "times": [
+                    (
+                        datetime(2024, 2, 5, 8, 0),
+                        datetime(2024, 2, 5, 17, 0),
+                    ),
+                    (
+                        datetime(2024, 2, 6, 8, 0),
+                        datetime(2024, 2, 6, 17, 0),
+                    ),
+                    (
+                        datetime(2024, 2, 7, 8, 0),
+                        datetime(2024, 2, 7, 17, 0),
+                    ),
+                ],
+            },
+            {
                 "address": "СТ Полет",
                 "houses": ["12"],
                 "times": [

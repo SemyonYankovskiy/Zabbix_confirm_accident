@@ -84,6 +84,7 @@ def content_parser(
             and not re.search(r"\d", paragraph.text)
         ):
             town = re.search(r"[а-яА-Я. ]+", paragraph.text).group(0)
+            continue
 
         elif (
             "strong" in str(paragraph)
@@ -97,7 +98,7 @@ def content_parser(
             continue
 
         address, houses = divide_by_address_and_house_numbers(paragraph.text)
-        if not (address and houses):
+        if not address:
             continue
 
         if "padding-left" in str(paragraph.get_attribute_list("style")):

@@ -14,12 +14,12 @@ def divide_by_address_and_house_numbers(text: str) -> Tuple[str, str]:
     """
 
     match = re.match(
-        r"((?:пл\.|площадь|ул\.|пер\.|туп\.)?.{3,}?)(?<![-\d])\s?(?=\d)(.+?);?$",
+        r"((?:пос\.|пл\.|площадь|ул\.|пер\.|туп\.)?.{3,}?)(?<![-\d])\s?(\d.*?)?;?$",
         text,
     )
     if not match:
         return "", ""
-    return match.group(1).strip(), match.group(2).strip()
+    return match.group(1).strip(), (match.group(2) or "").strip()
 
 
 def house_splitter(houses: str) -> List[str]:
@@ -60,7 +60,7 @@ def house_splitter(houses: str) -> List[str]:
         item = re.sub(r"\(.*\)", "", item)
         clean_ext_address.append(item)
 
-    return clean_ext_address
+    return [num for num in clean_ext_address if num]
 
 
 def address_cleaner(address: str) -> str:
@@ -74,7 +74,10 @@ def address_cleaner(address: str) -> str:
     cleaned: str = re.sub(r"«|»|уч\.|кад\.", "", address).strip()
 
     # Форматируем садовые товарищества.
+    cleaned = cleaned.replace("ТСН СНТ", "СНТ")
     cleaned = cleaned.replace("СТ-", "СТ ")
     cleaned = cleaned.replace("СНТ-", "СНТ ")
+    cleaned = cleaned.replace("ТСН-", "СНТ ")
+    cleaned = cleaned.replace("ТСН ", "СНТ ")
 
     return cleaned
