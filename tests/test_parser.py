@@ -4,7 +4,7 @@ from unittest import TestCase
 
 import bs4
 
-from app.address_convert import address_divider, address_converter, house_splitter
+from app.address_convert import address_divider, address_cleaner, house_splitter
 from app.parser import connect_and_get_resp, planned_parser
 from app.when_convert import str_to_datetime
 
@@ -105,7 +105,7 @@ class TestParser(TestCase):
         list_of_times = str_to_datetime(outage[1])
         addresses = address_divider(bs4.BeautifulSoup(str(outage[2]), "lxml"))
         for address, houses in addresses:
-            correct_address = address_converter(address)
+            correct_address = address_cleaner(address)
             houses_list = house_splitter(houses)
             outages_json = {
                 "address": correct_address,

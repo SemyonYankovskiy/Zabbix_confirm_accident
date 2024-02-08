@@ -3,7 +3,7 @@ import logging
 
 import bs4
 
-from app.address_convert import address_divider, house_splitter, address_converter
+from app.address_convert import address_divider, house_splitter, address_cleaner
 from app.parser import get_planned_outages
 from app.when_convert import str_to_datetime
 
@@ -26,7 +26,7 @@ for outages in text:
     address = ""
 
     for address, houses in addresses:
-        correct_address = address_converter(address)
+        correct_address = address_cleaner(address)
         houses_list = house_splitter(houses)
         outages_json = {
             "address": correct_address,

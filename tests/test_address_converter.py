@@ -1,7 +1,6 @@
 from unittest import TestCase
 
-from app.address_convert import house_splitter, address_converter
-
+from app.address_convert import house_splitter, address_cleaner
 
 FULL_ADDRESS_DATA = """
     Отключение электроэнергии 10 октября
@@ -146,99 +145,76 @@ FULL_ADDRESS_DATA = """
 """
 
 
-class TestAddressConverter(TestCase):
+class TestAddressCleaner(TestCase):
     def test_address(self):
         self.assertEqual(
             "СТ Полет",
-            address_converter("СТ «Полет» уч.")
+            address_cleaner("СТ «Полет» уч.")
         )
 
     def test_address1(self):
         self.assertEqual(
             "ул. Льва Толстого",
-            address_converter("ул. Льва Толстого")
+            address_cleaner("ул. Льва Толстого")
         )
 
     def test_address2(self):
         self.assertEqual(
             "туп. Обрывистый",
-            address_converter("туп. Обрывистый")
+            address_cleaner("туп. Обрывистый")
         )
 
     def test_address3(self):
         self.assertEqual(
             "с/з Софьи Перовской",
-            address_converter("с/з Софьи Перовской")
+            address_cleaner("с/з Софьи Перовской")
         )
 
     def test_address4(self):
         self.assertEqual(
             "СТ Черноморец-2",
-            address_converter("«СТ-Черноморец-2»")
+            address_cleaner("«СТ-Черноморец-2»")
         )
 
     def test_address5(self):
         self.assertEqual(
             "СТ Незабудка",
-            address_converter("«СТ-Незабудка»")
+            address_cleaner("«СТ-Незабудка»")
         )
 
     def test_address6(self):
         self.assertEqual(
             "СТ Икар",
-            address_converter("СТ «Икар» кад.")
+            address_cleaner("СТ «Икар» кад.")
         )
 
     def test_address7(self):
         self.assertEqual(
             "СНТ Статистик-2",
-            address_converter("«СНТ-Статистик-2»")
+            address_cleaner("«СНТ-Статистик-2»")
         )
+
 
 class TestHouseSplitter(TestCase):
 
     def test_houses1(self):
         self.assertListEqual(
             house_splitter("2-12,16-24,17-А,9-А,1-19,122"),
-            [
-                "2",
-                "4",
-                "6",
-                "8",
-                "10",
-                "12",
-                "16",
-                "18",
-                "20",
-                "22",
-                "24",
-                "17-А",
-                "9-А",
-                "1",
-                "3",
-                "5",
-                "7",
-                "9",
-                "11",
-                "13",
-                "15",
-                "17",
-                "19",
-                "122"
-            ],
+            ["2", "4", "6", "8", "10", "12", "16", "18", "20", "22", "24", "17А", "9А", "1", "3",
+                  "5", "7", "9", "11", "13", "15", "17", "19", "122"],
         )
 
     def test_houses2(self):
         self.assertListEqual(
             house_splitter("16,24, 29-В,29-Б,29-А,17-33"),
-            ["16", "24", "29-В", "29-Б", "29-А", "17", "19", "21", "23", "25", "27", "29", "31", "33"]
+            ["16", "24", "29В", "29Б", "29А", "17", "19", "21", "23", "25", "27", "29", "31", "33"]
         )
 
     def test_houses3(self):
         self.assertListEqual(
             house_splitter("2-60,19б/1,9-а,135-Г,19б/2,1-19,131"),
             ["2", "4", "6", "8", "10", "12", "14", "16", "18", "20", "22", "24", "26", "28", "30", "32", "34",
-             "36", "38", "40", "42", "44", "46", "48", "50", "52", "54", "56", "58", "60", "19б/1", "9-а", "135-Г",
+             "36", "38", "40", "42", "44", "46", "48", "50", "52", "54", "56", "58", "60", "19б/1", "9а", "135Г",
              "19б/2", "1", "3", "5", "7", "9", "11", "13", "15", "17", "19", "131"]
         )
 
@@ -249,10 +225,7 @@ class TestHouseSplitter(TestCase):
         )
 
     def test_houses_empty(self):
-        self.assertListEqual(
-            house_splitter(""),
-            [""]
-        )
+        self.assertListEqual(house_splitter(""), [""])
 
     def test_houses5(self):
         self.assertListEqual(
