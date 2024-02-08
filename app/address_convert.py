@@ -55,7 +55,6 @@ def house_splitter(houses: str) -> List[str]:
             ext_address.append(item)
 
     clean_ext_address = []
-    print(ext_address)
     for item in ext_address:
         item = item.replace("-", "")
         item = item.replace(" ", "")

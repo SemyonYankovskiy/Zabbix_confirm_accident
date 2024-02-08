@@ -84,6 +84,3 @@ def add_intermediate_dates(dates: List[str]) -> List[str]:
 
     all_dates.append('.'.join([str(i).zfill(2) for i in end_date]))
     return all_dates
-
-
-print(str_to_datetime("Дата\n\n01-03.11.2023 08:00 - 17:00\n"))
