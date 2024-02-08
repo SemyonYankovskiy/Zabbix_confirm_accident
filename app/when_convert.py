@@ -17,7 +17,7 @@ def check_date_format(date_str):
         return True
 
 
-def str_to_datetime(text: str) -> List[datetime]:
+def str_to_datetime(text: str) -> List[List[datetime]]:
     dates = []
     times = []
 
@@ -41,22 +41,26 @@ def str_to_datetime(text: str) -> List[datetime]:
         else:
             print("Некорректный формат даты")
 
-    times_of_outages = []
+    times_of_outages: List[List[datetime]] = []
 
     if times[0] > times[1]:
         night_start = f"{dates[0]} {times[0]}"
-        times_of_outages.append(datetime.strptime(night_start, "%d.%m.%Y %H:%M"))
         night_stop = f"{dates[1]} {times[1]}"
-        times_of_outages.append(datetime.strptime(night_stop, "%d.%m.%Y %H:%M"))
+        times_of_outages.append([
+            datetime.strptime(night_start, "%d.%m.%Y %H:%M"),
+            datetime.strptime(night_stop, "%d.%m.%Y %H:%M")]
+        )
         return times_of_outages
 
     if len(dates) > 1:
         dates = add_intermediate_dates(dates)
 
     for item_date in dates:
+        pair: List[datetime] = []
         for item_time in times:
             cut = f"{item_date} {item_time}"
-            times_of_outages.append(datetime.strptime(cut, "%d.%m.%Y %H:%M"))
+            pair.append(datetime.strptime(cut, "%d.%m.%Y %H:%M"))
+        times_of_outages.append(pair)
 
     return times_of_outages
 
