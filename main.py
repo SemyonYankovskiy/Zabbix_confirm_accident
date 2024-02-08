@@ -1,11 +1,9 @@
 import json
 import logging
 
-import bs4
-
-from app.address_convert import address_divider, house_splitter, address_cleaner
-from app.parser import get_planned_outages
-from app.when_convert import str_to_datetime
+from app.address_convert import house_splitter, address_cleaner
+from app.parser import get_planned_outage_data, get_planned_outages_urls, content_parser
+from app.when_convert import str_to_datetime_ranges
 
 logging.basicConfig(
     level=logging.DEBUG,
@@ -13,32 +11,33 @@ logging.basicConfig(
     filemode="a",
     format="%(asctime)s - %(levelname)s - %(name)s - %(message)s",
 )
-
 logging.debug("===============\nSTART main.py")
-text = get_planned_outages()
-list_of_outages = []
-logging.info(f"Result of parsing {text}")
-for outages in text:
-    list_of_times = str_to_datetime(outages[1])
-    logging.debug("str_to_datetime - Done")
-    addresses = address_divider(bs4.BeautifulSoup(str(outages[2]), "lxml"))
-    houses_list = []
-    address = ""
-
-    for address, houses in addresses:
-        correct_address = address_cleaner(address)
-        houses_list = house_splitter(houses)
-        outages_json = {
-            "address": correct_address,
-            "houses": houses_list,
-            "times": list_of_times,
-        }
-        list_of_outages.append(outages_json)
 
 
-json_string = json.dumps(
-    list_of_outages, indent=2, ensure_ascii=False
-)  # indent для красивого форматирования
+def main():
+    list_of_outages = []
 
-# Выводим JSON-строку
-print(json_string)
+    for url in get_planned_outages_urls("https://sevenergo.net"):
+        time_range, content = get_planned_outage_data(url)
+        base_time_ranges = str_to_datetime_ranges(time_range)
+
+        parsed_content = content_parser(content, base_time_ranges)
+
+        for address, houses, time_ranges in parsed_content:
+            correct_address = address_cleaner(address)
+            houses_list = house_splitter(houses)
+            outages_json = {
+                "address": correct_address,
+                "houses": houses_list,
+                "times": time_ranges,
+            }
+            list_of_outages.append(outages_json)
+
+    # indent для красивого форматирования
+    json_string = json.dumps(list_of_outages, indent=2, ensure_ascii=False)
+    # Выводим JSON-строку
+    print(json_string)
+
+
+if __name__ == "__main__":
+    main()

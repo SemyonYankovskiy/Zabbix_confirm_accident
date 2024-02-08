@@ -1,39 +1,30 @@
 import re
+from datetime import datetime, timedelta
 from typing import List, Tuple
 
-from bs4.element import Tag
 
+def update_datetime_pair(pair: List[datetime], new_time: str):
+    match = re.search(r"с\s+(\d\d:\d\d)\s+до\s+(\d\d:\d\d)", new_time)
 
-def address_divider(addresses: Tag) -> List[Tuple[str, str]]:
-    """
-    Находит в контейнере div адреса и приводит их к формату (адрес, перечень номеров домов)
-    Учитывает, что в блоке может быть указан также посёлок.
-    """
+    if not match:
+        return
 
-    result = []
-    town = ""
-    for paragraph in addresses.findAll("p"):
-        if not isinstance(paragraph, Tag):
-            continue
+    time_from, time_to = match.groups()
 
-        if (
-            "strong" in str(paragraph)
-            and paragraph.text.strip()
-            and not re.search(r"\d", paragraph.text)
-        ):
-            town = re.search(r"[а-яА-Я. ]+", paragraph.text).group(0)
+    for d, new_time in zip(pair, (time_from, time_to)):
+        print(d, new_time, "=" * 10)
+        d: datetime
+        new_hour, new_minute = new_time.split(":")
+        new_hour = int(new_hour)
+        new_minute = int(new_minute)
 
-        address, houses = divide_by_address_and_house_numbers(paragraph.text)
-        if not (address and houses):
-            continue
+        td = timedelta(hours=new_hour - d.hour, minutes=new_minute - d.minute)
+        print(td)
 
-        if "padding-left" in str(paragraph.get_attribute_list("style")):
-            address = town + ", " + address
-        else:
-            town = ""
+        d += td
+        print("NEW", d)
 
-        result.append((address, houses))
-    return result
+    print(*pair)
 
 
 def divide_by_address_and_house_numbers(text: str) -> Tuple[str, str]:

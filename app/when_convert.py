@@ -17,15 +17,15 @@ def check_date_format(date_str):
         return True
 
 
-def str_to_datetime(text: str) -> List[List[datetime]]:
+def str_to_datetime_ranges(text: str) -> List[List[datetime]]:
     dates = []
     times = []
 
     if check_date_format(text):
-        dates = re.findall(r'\d{2}\.\d{2}\.\d{4}', text)
-        times = re.findall(r'\d{2}:\d{2}', text)
+        dates = re.findall(r"\d{2}\.\d{2}\.\d{4}", text)
+        times = re.findall(r"\d{2}:\d{2}", text)
     else:
-        pattern = r'(\d{2})-(\d{2})\.(\d{2}\.\d{4}) (\d{2}:\d{2}) - (\d{2}:\d{2})'
+        pattern = r"(\d{2})-(\d{2})\.(\d{2}\.\d{4}) (\d{2}:\d{2}) - (\d{2}:\d{2})"
         # Ищем совпадения в строке
         match = re.search(pattern, text)
         if match:
@@ -46,9 +46,11 @@ def str_to_datetime(text: str) -> List[List[datetime]]:
     if times[0] > times[1]:
         night_start = f"{dates[0]} {times[0]}"
         night_stop = f"{dates[1]} {times[1]}"
-        times_of_outages.append([
-            datetime.strptime(night_start, "%d.%m.%Y %H:%M"),
-            datetime.strptime(night_stop, "%d.%m.%Y %H:%M")]
+        times_of_outages.append(
+            [
+                datetime.strptime(night_start, "%d.%m.%Y %H:%M"),
+                datetime.strptime(night_stop, "%d.%m.%Y %H:%M"),
+            ]
         )
         return times_of_outages
 
@@ -66,12 +68,12 @@ def str_to_datetime(text: str) -> List[List[datetime]]:
 
 
 def add_intermediate_dates(dates: List[str]) -> List[str]:
-    start_date = [int(i) for i in dates[0].split('.')]
-    end_date = [int(i) for i in dates[1].split('.')]
+    start_date = [int(i) for i in dates[0].split(".")]
+    end_date = [int(i) for i in dates[1].split(".")]
     all_dates = []
 
     while start_date != end_date:
-        all_dates.append('.'.join([str(i).zfill(2) for i in start_date]))
+        all_dates.append(".".join([str(i).zfill(2) for i in start_date]))
         if start_date[0] < 31:
             start_date[0] += 1
         elif start_date[1] < 12:
@@ -82,5 +84,5 @@ def add_intermediate_dates(dates: List[str]) -> List[str]:
             start_date[1] = 1
             start_date[2] += 1
 
-    all_dates.append('.'.join([str(i).zfill(2) for i in end_date]))
+    all_dates.append(".".join([str(i).zfill(2) for i in end_date]))
     return all_dates
