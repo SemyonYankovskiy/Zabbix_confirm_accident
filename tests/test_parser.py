@@ -540,3 +540,53 @@ class TestParser5(TestParser):
                 ],
             },
         ]
+
+
+class TestParser6(TestParser):
+    @classmethod
+    def setUpClass(cls):
+        cls.url = (
+            "https://sevenergo.net/news/kalendar-otklyuchenij-elektroenergii/659.html"
+        )
+        cls.valid = [
+            {
+                "address": "с. Орлиное, ул. Тюкова",
+                "houses": ["87А/1"],
+                "times": [
+                    (
+                        datetime(2023, 12, 15, 8, 0),
+                        datetime(2023, 12, 15, 16, 0),
+                    )
+                ],
+            },
+            {
+                "address": "с. Орлиное, КСП Красный Октябрь",
+                "houses": ["65", "уч524", "уч518"],
+                "times": [
+                    (
+                        datetime(2023, 12, 15, 8, 0),
+                        datetime(2023, 12, 15, 16, 0),
+                    )
+                ],
+            },
+            {
+                "address": "с. Орлиное, пер. Западный",
+                "houses": ["638"],
+                "times": [
+                    (
+                        datetime(2023, 12, 15, 8, 0),
+                        datetime(2023, 12, 15, 16, 0),
+                    )
+                ],
+            },
+            {
+                "address": "пос. Кача - ул. Ударная",
+                "houses": ["58"],
+                "times": [
+                    (
+                        datetime(2023, 12, 15, 8, 0),
+                        datetime(2023, 12, 15, 16, 0),
+                    )
+                ],
+            },
+        ]

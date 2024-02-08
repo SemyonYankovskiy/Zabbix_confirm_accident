@@ -78,30 +78,36 @@ def content_parser(
         if not isinstance(paragraph, bs4.Tag):
             continue
 
-        if (
-            "strong" in str(paragraph)
-            and paragraph.text.strip()
-            and not re.search(r"\d", paragraph.text)
-        ):
-            town = re.search(r"[а-яА-Я. ]+", paragraph.text).group(0)
-            continue
+        if "strong" in str(paragraph) and paragraph.text.strip():
+            # Если в параграфе <p> имеется тег <strong>, значит необходимо выполнить отдельную проверку
 
-        elif (
-            "strong" in str(paragraph)
-            and paragraph.text.strip()
-            and re.search(r"\d", paragraph.text)
-        ):
-            current_time_ranges = [
-                update_datetime_pair(pair, paragraph.text.strip())
-                for pair in origin_times
-            ]
-            continue
+            if not re.search(r"\d", paragraph.text):
+                # Если нет ни одной цифры в тексте параграфа, значит это название поселка (села).
+                town = re.search(r"[а-яА-Я. ]+", paragraph.text).group(0)
+                continue
+
+            elif re.search(r"с\s+(\d\d:\d\d)\s+до\s+(\d\d:\d\d)", paragraph.text):
+                # Если указан другой временной диапазон в формате: `с 08:00 до 13:00`,
+                # то необходимо скорректировать начальные диапазоны.
+                current_time_ranges = [
+                    update_datetime_pair(pair, paragraph.text.strip())
+                    for pair in origin_times
+                ]
+                continue
+
+            elif paragraph.find("strong").text != paragraph.text:
+                # Если текст, который в теге <strong> не содержит весь текст параграфа <p>,
+                # то это означает, что в параграфе имеется как указание поселка, так и его улицы.
+                # Необходимо рассматривать этот параграф далее без префикса населенного пункта.
+                town = ""
 
         address, houses = divide_by_address_and_house_numbers(paragraph.text)
         if not address:
             continue
 
         if "padding-left" in str(paragraph.get_attribute_list("style")):
+            # Если в стилях параграфа имеется отступ, то это означает,
+            # что данная запись относится к ранее указанному населенному пункту.
             address = town + ", " + address
         else:
             town = ""

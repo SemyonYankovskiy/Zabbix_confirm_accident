@@ -19,7 +19,7 @@ def divide_by_address_and_house_numbers(text: str) -> Tuple[str, str]:
     )
     if not match:
         return "", ""
-    return match.group(1).strip(), (match.group(2) or "").strip()
+    return (match.group(1) or "").strip(), (match.group(2) or "").strip()
 
 
 def house_splitter(houses: str) -> List[str]:
