@@ -13,7 +13,10 @@ def divide_by_address_and_house_numbers(text: str) -> Tuple[str, str]:
     ('пос. Ласпи', '53/134')
     """
 
-    match = re.match(r"(.+?)(?<![-\d])\s?(?=\d)(.+?);?$", text)
+    match = re.match(
+        r"((?:пл\.|площадь|ул\.|пер\.|туп\.)?.{3,}?)(?<![-\d])\s?(?=\d)(.+?);?$",
+        text,
+    )
     if not match:
         return "", ""
     return match.group(1).strip(), match.group(2).strip()
