@@ -58,8 +58,8 @@ def get_planned_outage_data(url: str) -> Optional[Tuple[str, bs4.Tag]]:
 
 
 def content_parser(
-    content: bs4.Tag, origin_times: List[List[datetime]]
-) -> List[Tuple[str, str, List[List[datetime]]]]:
+    content: bs4.Tag, origin_times: List[Tuple[datetime, datetime]]
+) -> List[Tuple[str, str, List[Tuple[datetime, datetime]]]]:
     """
     Находит в содержимом адреса и приводит их к формату (адрес, перечень номеров домов).
     Учитывает, что в блоке может быть указан также посёлок.

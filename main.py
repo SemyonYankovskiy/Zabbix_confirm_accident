@@ -18,7 +18,10 @@ def main():
     list_of_outages = []
 
     for url in get_planned_outages_urls("https://sevenergo.net"):
-        time_range, content = get_planned_outage_data(url)
+        data = get_planned_outage_data(url)
+        if data is None:
+            continue
+        time_range, content = data
         base_time_ranges = str_to_datetime_ranges(time_range)
 
         parsed_content = content_parser(content, base_time_ranges)

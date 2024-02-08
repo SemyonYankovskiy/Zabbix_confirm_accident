@@ -1,6 +1,6 @@
 import re
 from datetime import datetime
-from typing import List
+from typing import List, Tuple
 
 
 def check_date_format(date_str):
@@ -17,7 +17,7 @@ def check_date_format(date_str):
         return True
 
 
-def str_to_datetime_ranges(text: str) -> List[List[datetime]]:
+def str_to_datetime_ranges(text: str) -> List[Tuple[datetime, datetime]]:
     dates = []
     times = []
 
@@ -41,16 +41,14 @@ def str_to_datetime_ranges(text: str) -> List[List[datetime]]:
         else:
             print("Некорректный формат даты")
 
-    times_of_outages: List[List[datetime]] = []
+    times_of_outages: List[Tuple[datetime, datetime]] = []
 
     if times[0] > times[1]:
-        night_start = f"{dates[0]} {times[0]}"
-        night_stop = f"{dates[1]} {times[1]}"
         times_of_outages.append(
-            [
-                datetime.strptime(night_start, "%d.%m.%Y %H:%M"),
-                datetime.strptime(night_stop, "%d.%m.%Y %H:%M"),
-            ]
+            (
+                datetime.strptime(f"{dates[0]} {times[0]}", "%d.%m.%Y %H:%M"),
+                datetime.strptime(f"{dates[1]} {times[1]}", "%d.%m.%Y %H:%M"),
+            )
         )
         return times_of_outages
 
@@ -58,11 +56,12 @@ def str_to_datetime_ranges(text: str) -> List[List[datetime]]:
         dates = add_intermediate_dates(dates)
 
     for item_date in dates:
-        pair: List[datetime] = []
-        for item_time in times:
-            cut = f"{item_date} {item_time}"
-            pair.append(datetime.strptime(cut, "%d.%m.%Y %H:%M"))
-        times_of_outages.append(pair)
+        times_of_outages.append(
+            (
+                datetime.strptime(f"{item_date} {times[0]}", "%d.%m.%Y %H:%M"),
+                datetime.strptime(f"{item_date} {times[1]}", "%d.%m.%Y %H:%M"),
+            )
+        )
 
     return times_of_outages
 
