@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from app.address_convert import house_splitter, adress_converter
+from app.address_convert import house_splitter, address_converter
 
 
 FULL_ADDRESS_DATA = """
@@ -150,49 +150,49 @@ class TestAddressConverter(TestCase):
     def test_address(self):
         self.assertEqual(
             "СТ Полет",
-            adress_converter("СТ «Полет» уч.")
+            address_converter("СТ «Полет» уч.")
         )
 
     def test_address1(self):
         self.assertEqual(
             "ул. Льва Толстого",
-            adress_converter("ул. Льва Толстого")
+            address_converter("ул. Льва Толстого")
         )
 
     def test_address2(self):
         self.assertEqual(
             "туп. Обрывистый",
-            adress_converter("туп. Обрывистый")
+            address_converter("туп. Обрывистый")
         )
 
     def test_address3(self):
         self.assertEqual(
             "с/з Софьи Перовской",
-            adress_converter("с/з Софьи Перовской")
+            address_converter("с/з Софьи Перовской")
         )
 
     def test_address4(self):
         self.assertEqual(
             "СТ Черноморец-2",
-            adress_converter("«СТ-Черноморец-2»")
+            address_converter("«СТ-Черноморец-2»")
         )
 
     def test_address5(self):
         self.assertEqual(
             "СТ Незабудка",
-            adress_converter("«СТ-Незабудка»")
+            address_converter("«СТ-Незабудка»")
         )
 
     def test_address6(self):
         self.assertEqual(
             "СТ Икар",
-            adress_converter("СТ «Икар» кад.")
+            address_converter("СТ «Икар» кад.")
         )
 
     def test_address7(self):
         self.assertEqual(
             "СНТ Статистик-2",
-            adress_converter("«СНТ-Статистик-2»")
+            address_converter("«СНТ-Статистик-2»")
         )
 
 class TestHouseSplitter(TestCase):
@@ -252,4 +252,10 @@ class TestHouseSplitter(TestCase):
         self.assertListEqual(
             house_splitter(""),
             [""]
+        )
+
+    def test_houses5(self):
+        self.assertListEqual(
+            house_splitter("3-Б, 111, 22, 1 Б, 3-Б/4, 5/1-Б, 7-А"),
+            ["3Б", "111", "22", "1Б", "3Б/4", "5/1Б", "7А"]
         )
