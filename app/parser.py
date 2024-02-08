@@ -1,4 +1,4 @@
-from typing import Tuple, List
+from typing import Tuple, List, Optional
 
 import logging
 import bs4
@@ -25,18 +25,36 @@ def get_planned_outages() -> List[Tuple[str, str, bs4.Tag]]:
 
     for l in links:
         logging.debug(f"try to go on outages links")
-        resp = requests.get('https://sevenergo.net' + l.attrs['href'])
-        if resp.status_code != 200:
-            logging.error("status_code != 200", exc_info=True)
-            raise RequestException(f"Неверные данные авторизации. Status code: {resp.status_code}")
+        link = 'https://sevenergo.net' + l.attrs['href']
+        text = connect_and_get_resp(link)
+        res = planned_parser(text)
+        if res:
+            outages.append(res)
 
-        soup = BeautifulSoup(resp.text, 'lxml')
-        header = soup.find('h2', {'id': 'dp-event-event-header'})
-        when = soup.find('div', {'id': 'dp-event-information'})
-        content = soup.find('div', {'id': 'dp-event-container-content'})
-        if isinstance(content, bs4.Tag):
-            outages.append((header.text.strip(), when.text.strip(), content))
     return outages
+
+
+def connect_and_get_resp(link: str) -> str:
+    resp = requests.get(link)
+    if resp.status_code != 200:
+        logging.error("status_code != 200", exc_info=True)
+        return ""
+    return resp.text
+
+
+def planned_parser(text: str) -> Optional[Tuple[str, str, bs4.Tag]]:
+    soup = BeautifulSoup(text, 'lxml')
+    header = soup.find('h2', {'id': 'dp-event-event-header'})
+    when = soup.find('div', {'id': 'dp-event-information'})
+    content = soup.find('div', {'id': 'dp-event-container-content'})
+    if isinstance(content, bs4.Tag):
+        return header.text.strip(), when.text.strip(), content
+    return
+
+
+# response = connect_and_get_resp("https://sevenergo.net/news/kalendar-otklyuchenij-elektroenergii/697.html")
+# outages = planned_parser(response)
+# print(outages)
 
 # def current_outages():
 #     outages = ''
