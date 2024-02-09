@@ -31,7 +31,7 @@ def house_splitter(houses: str) -> List[str]:
     ['2', '4', '6', '19б/1', '9а']
     """
 
-    houses = re.sub(r"\(.*\)", "", houses)
+    houses = re.sub(r"\(.*?\)", "", houses)
     arr = list(houses.split(","))
     clean_address = []
     for item in arr:
@@ -45,7 +45,7 @@ def house_splitter(houses: str) -> List[str]:
     for item in clean_address:
         if "-" in item:
 
-            start, stop = map(str, item.split("-"))
+            start, stop = item.split("-")
             if not start.isnumeric() or not stop.isnumeric():
                 ext_address.append(item)
                 continue

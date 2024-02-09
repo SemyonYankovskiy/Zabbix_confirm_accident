@@ -4,11 +4,11 @@ from datetime import datetime
 from typing import Tuple, List, Optional
 
 import bs4
-import requests
 from bs4 import BeautifulSoup
 
-from app.address_convert import divide_by_address_and_house_numbers
-from app.datetime_convert import update_datetime_pair
+from .address_convert import divide_by_address_and_house_numbers
+from .datetime_convert import update_datetime_pair
+from .request import request_get
 
 
 def get_planned_outages_urls(site: str = "https://sevenergo.net") -> List[str]:
@@ -16,7 +16,7 @@ def get_planned_outages_urls(site: str = "https://sevenergo.net") -> List[str]:
     Опрашивает `site` и находит список ссылок плановых отключений.
     :return: Список URL.
     """
-    resp = requests.get(site)
+    resp = request_get(site)
     if resp.status_code != 200:
         logging.error(f"site={site} statusCode={resp.status_code}")
         return []
@@ -42,7 +42,7 @@ def get_planned_outage_data(url: str) -> Optional[Tuple[str, bs4.Tag]]:
     :return: (строка диапазона времени отключения, содержимое).
     """
     logging.debug(f"try to go on outages links")
-    resp = requests.get(url)
+    resp = request_get(url)
     if resp.status_code != 200:
         logging.error(f"URL={url} statusCode={resp.status_code}")
         return
@@ -95,7 +95,10 @@ def content_parser(
                 ]
                 continue
 
-            elif paragraph.find("strong").text != paragraph.text:
+            elif (
+                paragraph.find("strong").text.strip()
+                and paragraph.find("strong").text != paragraph.text
+            ):
                 # Если текст, который в теге <strong> не содержит весь текст параграфа <p>,
                 # то это означает, что в параграфе имеется как указание поселка, так и его улицы.
                 # Необходимо рассматривать этот параграф далее без префикса населенного пункта.

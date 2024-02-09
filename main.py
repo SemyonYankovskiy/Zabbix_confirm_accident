@@ -1,5 +1,6 @@
 import json
 import logging
+from datetime import date
 
 from app.address_convert import house_splitter, address_cleaner
 from app.datetime_convert import str_to_datetime_ranges
@@ -11,7 +12,7 @@ logging.basicConfig(
     filemode="a",
     format="%(asctime)s - %(levelname)s - %(name)s - %(message)s",
 )
-logging.debug("===============\nSTART main.py")
+logging.debug("===============\nSTART")
 
 
 def main():
@@ -36,9 +37,11 @@ def main():
             }
             list_of_outages.append(outages_json)
 
-    # indent для красивого форматирования
-    json_string = json.dumps(list_of_outages, indent=2, ensure_ascii=False,default=str)
-    # Выводим JSON-строку
+    json_string = json.dumps(list_of_outages, indent=2, ensure_ascii=False, default=str)
+
+    with open(f"data-{date.today()}.json", "w", encoding="utf-8") as outfile:
+        outfile.write(json_string)
+
     print(json_string)
 
 
