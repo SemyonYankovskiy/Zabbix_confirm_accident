@@ -22,7 +22,7 @@ def get_planned_outages_urls(site: str = "https://sevenergo.net") -> List[str]:
         return []
 
     soup = BeautifulSoup(resp.text, "lxml")
-    if soup != "":
+    if not soup:
         logging.debug(f"parsing_all - Done")
         return []
 
