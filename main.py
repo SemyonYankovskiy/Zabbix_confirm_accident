@@ -37,7 +37,7 @@ def main():
             list_of_outages.append(outages_json)
 
     # indent для красивого форматирования
-    json_string = json.dumps(list_of_outages, indent=2, ensure_ascii=False)
+    json_string = json.dumps(list_of_outages, indent=2, ensure_ascii=False,default=str)
     # Выводим JSON-строку
     print(json_string)
 

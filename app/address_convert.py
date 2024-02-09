@@ -31,6 +31,7 @@ def house_splitter(houses: str) -> List[str]:
     ['2', '4', '6', '19б/1', '9а']
     """
 
+    houses = re.sub(r"\(.*\)", "", houses)
     arr = list(houses.split(","))
     clean_address = []
     for item in arr:
@@ -57,7 +58,7 @@ def house_splitter(houses: str) -> List[str]:
     for item in ext_address:
         item = item.replace("-", "")
         item = item.replace(" ", "")
-        item = re.sub(r"\(.*\)", "", item)
+
         clean_ext_address.append(item)
 
     return [num for num in clean_ext_address if num]
@@ -71,7 +72,7 @@ def address_cleaner(address: str) -> str:
     'СТ Икар'
     """
     # Убираем кавычки и лишние символы.
-    cleaned: str = re.sub(r"«|»|уч\.|кад\.", "", address).strip()
+    cleaned: str = re.sub(r"«|»|уч\.|кад\.|тер |д\.", "", address).strip()
 
     # Форматируем садовые товарищества.
     cleaned = cleaned.replace("ТСН СНТ", "СНТ")
