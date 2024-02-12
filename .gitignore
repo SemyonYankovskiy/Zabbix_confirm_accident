@@ -1,2 +1,9 @@
 .idea
 venv
+
+py_log.txt
+
+data-*.json
+*.geojson
+*.drawio
+*.drawio.*

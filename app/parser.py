@@ -18,12 +18,12 @@ def get_planned_outages_urls(site: str = "https://sevenergo.net") -> List[str]:
     """
     resp = request_get(site)
     if resp.status_code != 200:
-        logging.error(f"site={site} statusCode={resp.status_code}")
+        logging.error("site=%s statusCode=%s", site, resp.status_code)
         return []
 
     soup = BeautifulSoup(resp.text, "lxml")
     if not soup:
-        logging.debug(f"parsing_all - Done")
+        logging.debug("parsing_all - Done")
         return []
 
     links = soup.findAll("a", class_="dp-module-upcoming-modal-disabled")
@@ -41,18 +41,20 @@ def get_planned_outage_data(url: str) -> Optional[Tuple[str, bs4.Tag]]:
     :param url: Абсолютная ссылка новости.
     :return: (строка диапазона времени отключения, содержимое).
     """
-    logging.debug(f"try to go on outages links")
+    logging.debug("try to go on outages links")
     resp = request_get(url)
     if resp.status_code != 200:
-        logging.error(f"URL={url} statusCode={resp.status_code}")
-        return
+        logging.error("URL=%s statusCode=%s", url, resp.status_code)
+        return None
 
     soup = BeautifulSoup(resp.text, "lxml")
     time_range = soup.find("div", {"id": "dp-event-information"})
     content = soup.find("div", {"id": "dp-event-container-content"})
 
-    if isinstance(content, bs4.Tag):
+    if isinstance(content, bs4.Tag) and isinstance(time_range, bs4.Tag):
         return time_range.text.strip(), content
+
+    return None
 
 
 def content_parser(
@@ -80,13 +82,15 @@ def content_parser(
 
         if "strong" in str(paragraph) and paragraph.text.strip():
             # Если в параграфе <p> имеется тег <strong>, значит необходимо выполнить отдельную проверку
+            strong_tag = paragraph.find("strong")
 
             if not re.search(r"\d", paragraph.text):
                 # Если нет ни одной цифры в тексте параграфа, значит это название поселка (села).
-                town = re.search(r"[а-яА-Я. ]+", paragraph.text).group(0)
+                match = re.search(r"[а-яА-Я. ]+", paragraph.text)
+                town = match.group(0) if match else ""
                 continue
 
-            elif re.search(r"с\s+(\d\d:\d\d)\s+до\s+(\d\d:\d\d)", paragraph.text):
+            if re.search(r"с\s+(\d\d:\d\d)\s+до\s+(\d\d:\d\d)", paragraph.text):
                 # Если указан другой временной диапазон в формате: `с 08:00 до 13:00`,
                 # то необходимо скорректировать начальные диапазоны.
                 current_time_ranges = [
@@ -95,9 +99,10 @@ def content_parser(
                 ]
                 continue
 
-            elif (
-                paragraph.find("strong").text.strip()
-                and paragraph.find("strong").text != paragraph.text
+            if (
+                strong_tag
+                and strong_tag.text.strip()
+                and strong_tag.text != paragraph.text
             ):
                 # Если текст, который в теге <strong> не содержит весь текст параграфа <p>,
                 # то это означает, что в параграфе имеется как указание поселка, так и его улицы.

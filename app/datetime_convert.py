@@ -1,29 +1,16 @@
 import re
 from datetime import datetime
-from typing import List, Tuple, Sequence
-
-
-def check_date_format(date_str):
-    # Паттерн для формата даты и времени: dd.mm.yyyy hh:mm - hh:mm
-    pattern = r"\d{2}\-\d{2}\.\d{2}\.\d{4} \d{2}:\d{2} - \d{2}:\d{2}"
-
-    # Ищем совпадение паттерна
-    match = re.search(pattern, date_str)
-
-    # Если найдено совпадение, возвращаем True, иначе False
-    if match:
-        return False
-    else:
-        return True
+from typing import List, Tuple
 
 
 def str_to_datetime_ranges(text: str) -> List[Tuple[datetime, datetime]]:
     dates = []
     times = []
 
-    if check_date_format(text):
+    if re.search(r"\d{2}-\d{2}\.\d{2}\.\d{4} \d{2}:\d{2} - \d{2}:\d{2}", text):
         dates = re.findall(r"\d{2}\.\d{2}\.\d{4}", text)
         times = re.findall(r"\d{2}:\d{2}", text)
+
     else:
         pattern = r"(\d{2})-(\d{2})\.(\d{2}\.\d{4}) (\d{2}:\d{2}) - (\d{2}:\d{2})"
         # Ищем совпадения в строке
@@ -88,8 +75,8 @@ def add_intermediate_dates(dates: List[str]) -> List[str]:
 
 
 def update_datetime_pair(
-    pair: Sequence[datetime], time_correction: str
-) -> List[datetime]:
+    pair: Tuple[datetime, datetime], time_correction: str
+) -> Tuple[datetime, datetime]:
     """
     Обновляет диапазон времени через переданную строку, в которой находится уточнение временного диапазона.
     :param pair: Пара дат.
@@ -99,26 +86,31 @@ def update_datetime_pair(
 
     match = re.search(r"с\s+(\d\d:\d\d)\s+до\s+(\d\d:\d\d)", time_correction)
     if not match:
-        return list(pair)
-
-    new_pair: List[datetime] = []
-    time_from, time_to = match.groups()
+        return pair
 
     correction_time: List[Tuple[int, int]] = []
-    for time in (time_from, time_to):
+    for time in match.groups():
         hour, minutes = time.split(":")
         correction_time.append((int(hour), int(minutes)))
 
+    new_time_from = None
+    new_time_to = None
+
     for i, (d, (new_hour, new_minute)) in enumerate(zip(pair, correction_time)):
-        d: datetime
         # Всегда указываем день такой же как и в начале, чтобы не было перехода через ночь аварии
-        new_pair.append(
-            datetime(
-                year=d.year,
-                month=d.month,
-                day=pair[0].day,
-                hour=new_hour,
-                minute=new_minute,
-            )
+        res = datetime(
+            year=d.year,
+            month=d.month,
+            day=pair[0].day,
+            hour=new_hour,
+            minute=new_minute,
         )
-    return new_pair
+        if i == 0:
+            new_time_from = res
+        elif i == 1:
+            new_time_to = res
+
+    if new_time_from and new_time_to:
+        return new_time_from, new_time_to
+
+    return pair
