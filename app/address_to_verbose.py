@@ -244,7 +244,7 @@ def get_info_from_zabbix_node(name: str) -> Tuple[str, str]:
     house = ""
 
     match = re.search(
-        r"(?:SVSL|FTTB|MSAN)[-_](?:\d+[-_])?(\d{0,2}[a-z_A-Z]+)(\d+[abvwgdeABVWGDE.\d]{0,2})?(k\d{1,2})?\S*", name,
+        r"(?:SVSL|FTTB|MSAN)[-_](?:\d+[-_])?(\d{0,2}[a-z_A-Z]+)(\d+[abvwgdeABVWGDE\d]{0,2})?([k\-.]\d{1,2})?\S*", name,
         flags=re.IGNORECASE)
     if match:
         res.append(match.groups())
@@ -294,6 +294,8 @@ def replace_english_with_russian(text: str) -> str:
         'e': 'е',
 
         'k': '/',
+        '.': '/',
+        '-': '/',
     }
 
     # Проходим по каждому символу в строке и заменяем его, если он есть в словаре
