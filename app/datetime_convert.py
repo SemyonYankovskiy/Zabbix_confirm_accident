@@ -4,62 +4,55 @@ from typing import List, Tuple
 
 
 def str_to_datetime_ranges(text: str) -> List[Tuple[datetime, datetime]]:
-    # Выбор паттерна для обработки даты,
-    # первый используется исключительно для случаев когда дата задана форматом 01-04.12.24
-    if not re.search(r"\d{2}-\d{2}\.\d{2}\.\d{4} \d{2}:\d{2} - \d{2}:\d{2}", text):
+    # Выбор паттерна для обработки даты.
+    # Используется исключительно для случаев когда дата задана форматом 01-04.12.24.
+    datetime_match = re.search(r"(\d{2})-(\d{2})\.(\d{2}\.\d{4}) (\d{2}:\d{2}) - (\d{2}:\d{2})", text)
+
+    if datetime_match:
+        # Извлекаем данные из совпадения
+        day_start, day_end, month_year, time_start, time_end = datetime_match.groups()
+        # Преобразуем формат даты
+        start_date = f"{day_start}.{month_year}"
+        end_date = f"{day_end}.{month_year}"
+
+        dates: List[str] = [start_date, end_date]
+        times: List[str] = [time_start, time_end]
+
+    else:
         # Для всех остальных случаев
         dates = re.findall(r"\d{2}\.\d{2}\.\d{4}", text)
         times = re.findall(r"\d{2}:\d{2}", text)
-    # Если используется первый паттерн
-    else:
-        pattern = r"(\d{2})-(\d{2})\.(\d{2}\.\d{4}) (\d{2}:\d{2}) - (\d{2}:\d{2})"
-        # Ищем совпадения в строке
-        match = re.search(pattern, text)
-        if match:
-            # Извлекаем данные из совпадения
-            day_start, day_end, month_year, time_start, time_end = match.groups()
-            # Преобразуем формат даты
-            start_date = f"{day_start}.{month_year}"
-            end_date = f"{day_end}.{month_year}"
 
-            dates = [start_date, end_date]
-            times = [time_start, time_end]
+    ranges: List[Tuple[datetime, datetime]] = []
 
-        else:
-            print("Некорректный формат даты")
-            return []
-
-    times_of_outages: List[Tuple[datetime, datetime]] = []
-
-    if times[0] > times[1]:
-        times_of_outages.append(
-            (
-                datetime.strptime(f"{dates[0]} {times[0]}", "%d.%m.%Y %H:%M"),
-                datetime.strptime(f"{dates[1]} {times[1]}", "%d.%m.%Y %H:%M"),
-            )
-        )
-        return times_of_outages
+    if len(times) >= 2 and len(dates) >= 2 and times[0] > times[1]:
+        add_datetime_pair_to(ranges, f"{dates[0]} {times[0]}", f"{dates[1]} {times[1]}")
+        return ranges
 
     if len(dates) > 1:
         dates = add_intermediate_dates(dates)
 
     for item_date in dates:
-        try:
-            times_of_outages.append(
-                (
-                    datetime.strptime(f"{item_date} {times[0]}", "%d.%m.%Y %H:%M"),
-                    datetime.strptime(f"{item_date} {times[1]}", "%d.%m.%Y %H:%M"),
-                )
-            )
-        except ValueError as e:
-            continue
+        add_datetime_pair_to(ranges, f"{item_date} {times[0]}", f"{item_date} {times[1]}")
 
-    return times_of_outages
+    return ranges
+
+
+def add_datetime_pair_to(pair_list: List[Tuple[datetime, datetime]], dt_start: str, dt_end: str) -> None:
+    try:
+        pair_list.append(
+            (
+                datetime.strptime(dt_start, "%d.%m.%Y %H:%M"),
+                datetime.strptime(dt_end, "%d.%m.%Y %H:%M"),
+            )
+        )
+    except ValueError:
+        pass
 
 
 def add_intermediate_dates(dates: List[str]) -> List[str]:
     """
-    функция заполнения дат между начальной и конечной датами
+    Функция заполнения дат между начальной и конечной датами
 
     :param dates: ['30.12.2024', '01.01.2025']
     :return: all_dates: ['30.12.2024', '31.12.2024', '01.01.2025']
@@ -85,9 +78,7 @@ def add_intermediate_dates(dates: List[str]) -> List[str]:
     return all_dates
 
 
-def update_datetime_pair(
-        pair: Tuple[datetime, datetime], time_correction: str
-) -> Tuple[datetime, datetime]:
+def update_datetime_pair(pair: Tuple[datetime, datetime], time_correction: str) -> Tuple[datetime, datetime]:
     """
     Обновляет диапазон времени через переданную строку, в которой находится уточнение временного диапазона.
     :param pair: Пара дат.
