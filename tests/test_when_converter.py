@@ -124,3 +124,60 @@ class TestWhenConverter(TestCase):
                 ),
             ],
         )
+
+    def test_when_converter_above_month(self):
+        self.assertListEqual(
+            str_to_datetime_ranges("Дата\n\n31.01.2024 08:00 - 02.02.2024 17:00\n"),
+            [
+                (
+                    datetime.strptime("08:00:00 31.01.2024", "%H:%M:%S %d.%m.%Y"),
+                    datetime.strptime("17:00:00 31.01.2024", "%H:%M:%S %d.%m.%Y"),
+                ),
+                (
+                    datetime.strptime("08:00:00 01.02.2024", "%H:%M:%S %d.%m.%Y"),
+                    datetime.strptime("17:00:00 01.02.2024", "%H:%M:%S %d.%m.%Y"),
+                ),
+                (
+                    datetime.strptime("08:00:00 02.02.2024", "%H:%M:%S %d.%m.%Y"),
+                    datetime.strptime("17:00:00 02.02.2024", "%H:%M:%S %d.%m.%Y"),
+                ),
+            ],
+        )
+
+    def test_when_converter_above_month_28_days(self):
+        self.assertListEqual(
+            str_to_datetime_ranges("Дата\n\n28.02.2024 08:00 - 01.03.2024 17:00\n"),
+            [
+                (
+                    datetime.strptime("08:00:00 28.02.2024", "%H:%M:%S %d.%m.%Y"),
+                    datetime.strptime("17:00:00 28.02.2024", "%H:%M:%S %d.%m.%Y"),
+                ),
+                (
+                    datetime.strptime("08:00:00 29.02.2024", "%H:%M:%S %d.%m.%Y"),
+                    datetime.strptime("17:00:00 29.02.2024", "%H:%M:%S %d.%m.%Y"),
+                ),
+                (
+                    datetime.strptime("08:00:00 01.03.2024", "%H:%M:%S %d.%m.%Y"),
+                    datetime.strptime("17:00:00 01.03.2024", "%H:%M:%S %d.%m.%Y"),
+                ),
+            ],
+        )
+
+    def test_when_converter_above_year(self):
+        self.assertListEqual(
+            str_to_datetime_ranges("Дата\n\n30.12.2024 08:00 - 01.01.2025 17:00\n"),
+            [
+                (
+                    datetime.strptime("08:00:00 30.12.2024", "%H:%M:%S %d.%m.%Y"),
+                    datetime.strptime("17:00:00 30.12.2024", "%H:%M:%S %d.%m.%Y"),
+                ),
+                (
+                    datetime.strptime("08:00:00 31.12.2024", "%H:%M:%S %d.%m.%Y"),
+                    datetime.strptime("17:00:00 31.12.2024", "%H:%M:%S %d.%m.%Y"),
+                ),
+                (
+                    datetime.strptime("08:00:00 01.01.2025", "%H:%M:%S %d.%m.%Y"),
+                    datetime.strptime("17:00:00 01.01.2025", "%H:%M:%S %d.%m.%Y"),
+                ),
+            ],
+        )

@@ -4,13 +4,13 @@ from typing import List, Tuple
 
 
 def str_to_datetime_ranges(text: str) -> List[Tuple[datetime, datetime]]:
-    dates = []
-    times = []
-
-    if re.search(r"\d{2}-\d{2}\.\d{2}\.\d{4} \d{2}:\d{2} - \d{2}:\d{2}", text):
+    # Выбор паттерна для обработки даты,
+    # первый используется исключительно для случаев когда дата задана форматом 01-04.12.24
+    if not re.search(r"\d{2}-\d{2}\.\d{2}\.\d{4} \d{2}:\d{2} - \d{2}:\d{2}", text):
+        # Для всех остальных случаев
         dates = re.findall(r"\d{2}\.\d{2}\.\d{4}", text)
         times = re.findall(r"\d{2}:\d{2}", text)
-
+    # Если используется первый паттерн
     else:
         pattern = r"(\d{2})-(\d{2})\.(\d{2}\.\d{4}) (\d{2}:\d{2}) - (\d{2}:\d{2})"
         # Ищем совпадения в строке
@@ -27,6 +27,7 @@ def str_to_datetime_ranges(text: str) -> List[Tuple[datetime, datetime]]:
 
         else:
             print("Некорректный формат даты")
+            return []
 
     times_of_outages: List[Tuple[datetime, datetime]] = []
 
@@ -43,17 +44,26 @@ def str_to_datetime_ranges(text: str) -> List[Tuple[datetime, datetime]]:
         dates = add_intermediate_dates(dates)
 
     for item_date in dates:
-        times_of_outages.append(
-            (
-                datetime.strptime(f"{item_date} {times[0]}", "%d.%m.%Y %H:%M"),
-                datetime.strptime(f"{item_date} {times[1]}", "%d.%m.%Y %H:%M"),
+        try:
+            times_of_outages.append(
+                (
+                    datetime.strptime(f"{item_date} {times[0]}", "%d.%m.%Y %H:%M"),
+                    datetime.strptime(f"{item_date} {times[1]}", "%d.%m.%Y %H:%M"),
+                )
             )
-        )
+        except ValueError as e:
+            continue
 
     return times_of_outages
 
 
 def add_intermediate_dates(dates: List[str]) -> List[str]:
+    """
+    функция заполнения дат между начальной и конечной датами
+
+    :param dates: ['30.12.2024', '01.01.2025']
+    :return: all_dates: ['30.12.2024', '31.12.2024', '01.01.2025']
+    """
     start_date = [int(i) for i in dates[0].split(".")]
     end_date = [int(i) for i in dates[1].split(".")]
     all_dates = []
@@ -71,11 +81,12 @@ def add_intermediate_dates(dates: List[str]) -> List[str]:
             start_date[2] += 1
 
     all_dates.append(".".join([str(i).zfill(2) for i in end_date]))
+    print(all_dates)
     return all_dates
 
 
 def update_datetime_pair(
-    pair: Tuple[datetime, datetime], time_correction: str
+        pair: Tuple[datetime, datetime], time_correction: str
 ) -> Tuple[datetime, datetime]:
     """
     Обновляет диапазон времени через переданную строку, в которой находится уточнение временного диапазона.
