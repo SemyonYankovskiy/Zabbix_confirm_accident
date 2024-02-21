@@ -1,5 +1,6 @@
 import json
-from datetime import datetime
+import re
+from datetime import datetime, date
 
 
 def has_outages(input_address: tuple, json_file_name: str) -> str:
@@ -14,23 +15,27 @@ def has_outages(input_address: tuple, json_file_name: str) -> str:
         str: Значение времени (times) в виде строки, если адрес найден, иначе пустая строка.
     """
 
+    street = input_address[0]
+    pattern = street
+    print(pattern)
     try:
         with open(json_file_name, "r", encoding="utf-8") as json_file:
             data = json.load(json_file)
-            for item in json_file:
+        for item in data:
+            print(item)
+            times = item.get("times")
+            street_match = re.search(street, str(item.values()))
+            house_match = any(input_address[1] in x for x in item.get("houses"))
+            date_match = re.search(str(date.today()), str(item.get("times")))
+            print(str(date.today()), str(item.get("times")))
+            if street_match and house_match and date_match:
 
-
-            zabbix_input_address = f"{input_address[0]} {input_address[1]}"
-
-            print("1)", address_from_json)
-            print("2)", zabbix_input_address)
-
-            if address_from_json and address_from_json == zabbix_input_address:
+                print("Адрес, дом, дата - ОК")
                 # Адрес найден, возвращаем значение times как строку
-                print("Адрес найден")
-                times = data.get("times")
-                if times:
-                    return "Плановые работы СЭ: "+str(times)
+                time_str = f"{times[0][0][11:16]}-{times[0][1][11:16]}"
+
+                return "Плановые работы СЭ: "+time_str
+
             # Адрес не найден
             print("Адрес не найден")
             return ""

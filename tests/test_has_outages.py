@@ -18,19 +18,30 @@ class TestAddressToVerboseConverter(TestCase):
             "houses": ["1"],
             "times": [
             [
-            "2024-02-20 08:00:00",
-            "2024-02-20 16:00:00"
+            "2024-02-21 08:00:00",
+            "2024-02-21 16:00:00"
             ]
             ]
-            }]
+            },
+            {
+                "address": "Вакуленчука",
+                "houses": ["22"],
+                "times": [
+                    [
+                        "2024-02-21 08:00:00",
+                        "2024-02-21 16:00:00"
+                    ]
+                ]
+            }
+        ]
 
         #  Запись в файл
         json_string = json.dumps(list_of_outages, indent=2, ensure_ascii=False, default=str)
         with open(json_file_name, "w", encoding="utf-8") as outfile:
             outfile.write(json_string)
-        print(json_string)
+
 
         address_from_zabbix = ("Курчатова","1")
-        valid = "Плановые работы СЭ: 2024-02-20 08:00-16:00"
+        valid = "Плановые работы СЭ: 08:00-16:00"
 
         self.assertEqual(valid, has_outages(address_from_zabbix, json_file_name))
