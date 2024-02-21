@@ -1,9 +1,10 @@
 import json
 import re
 from datetime import date
+from typing import List
 
 
-def json_opener(json_file_name: str) -> list:
+def json_opener(json_file_name: str) -> List[dict]:
     try:
         with open(json_file_name, "r", encoding="utf-8") as json_file:
             data = json.load(json_file)
