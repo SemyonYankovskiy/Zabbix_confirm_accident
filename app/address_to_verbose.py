@@ -213,28 +213,27 @@ dr_dict = {
     "Ind": "Индустриальная",
 }
 dr_dict_jr = {
-    "Andreevka": (r'Андреевка(.+?)Центральная', '22'),
-    "Solnechniy": (r'Солнечный(.+?)Андреевская', '21'),
-    "Gollandia": ('Курчатова', '10'),
-    "Ternovka": (r'Терновка(.+?)Ленина', '2'),
-    "Orlinoe": (r'Орлиное(.+?)Тюкова', '66'),
-    "Kacha": (r'Кача(.+?)Авиаторов', '9'),
-    "Orlovka": (r'Осипенко(.+?)Сухий', '1'),
-    "Lyubimovka": (r'Любимовка(.+?)Софьи Перовской', '66'),
-    "Vavilovo": ('Дальнее', '1'),
-    "Verhnesadovoe": (r'Верхнесадовое(.+?)Севастопольская', '66'),
-    "VerhnesadovoeAdm": (r'Верхнесадовое(.+?)Севастопольская', '82'),
-    "VerhnesadovoeBiblioteka": (r'Верхнесадовое(.+?)Севастопольская', '53'),
-    "BogdMarket": ('Богданова', '15'),
-    "SahGolovka": (r'Сахарная Головка(.+?)Трактористов', '9а'),
-    "GRES": ('Яблочкова', '5'),
-    "Akvamarin": ('Парковая', '11'),
-    "10KM": ('пер. Новикова', '1'),
-    "Sevenergo": ('Хрусталёва', '44'),
-    "MaksDacha": ('Каштановая', '3'),
-    "OMEGA": ('Челнокова', '10'),
-    "AhmatovaPark": ('парк Анны Ахматовой', ''),
-
+    "Andreevka": (r"Андреевка(.+?)Центральная", "22"),
+    "Solnechniy": (r"Солнечный(.+?)Андреевская", "21"),
+    "Gollandia": ("Курчатова", "10"),
+    "Ternovka": (r"Терновка(.+?)Ленина", "2"),
+    "Orlinoe": (r"Орлиное(.+?)Тюкова", "66"),
+    "Kacha": (r"Кача(.+?)Авиаторов", "9"),
+    "Orlovka": (r"Осипенко(.+?)Сухий", "1"),
+    "Lyubimovka": (r"Любимовка(.+?)Софьи Перовской", "66"),
+    "Vavilovo": ("Дальнее", "1"),
+    "Verhnesadovoe": (r"Верхнесадовое(.+?)Севастопольская", "66"),
+    "VerhnesadovoeAdm": (r"Верхнесадовое(.+?)Севастопольская", "82"),
+    "VerhnesadovoeBiblioteka": (r"Верхнесадовое(.+?)Севастопольская", "53"),
+    "BogdMarket": ("Богданова", "15"),
+    "SahGolovka": (r"Сахарная Головка(.+?)Трактористов", "9а"),
+    "GRES": ("Яблочкова", "5"),
+    "Akvamarin": ("Парковая", "11"),
+    "10KM": ("пер. Новикова", "1"),
+    "Sevenergo": ("Хрусталёва", "44"),
+    "MaksDacha": ("Каштановая", "3"),
+    "OMEGA": ("Челнокова", "10"),
+    "AhmatovaPark": ("парк Анны Ахматовой", ""),
 }
 
 
@@ -244,8 +243,10 @@ def get_info_from_zabbix_node(name: str) -> Tuple[str, str]:
     house = ""
 
     match = re.search(
-        r"(?:SVSL|FTTB|MSAN)[-_](?:\d+[-_])?(\d{0,2}[a-z_A-Z]+)(\d+[abvwgdeABVWGDE\d]{0,2})?([k\-.]\d{1,2})?\S*", name,
-        flags=re.IGNORECASE)
+        r"(?:SVSL|FTTB|MSAN)[-_](?:\d+[-_])?(\d{0,2}[a-z_A-Z]+)(\d+[abvwgdeABVWGDE\d]{0,2})?([k\-.]\d{1,2})?\S*",
+        name,
+        flags=re.IGNORECASE,
+    )
     if match:
         res.append(match.groups())
         # тут разделение на все 3 интересующие нас группы улицу, дом и корпус
@@ -254,13 +255,13 @@ def get_info_from_zabbix_node(name: str) -> Tuple[str, str]:
         korpus_zabbix = match.group(3)
 
         # костыль, чтобы не менять регулярку
-        if street_zabbix == "GOstryakova_" or street_zabbix == "GStalingr_":
+        if street_zabbix in ("GStalingr_", "GOstryakova_"):
             street_zabbix = street_zabbix.replace("_", "")
         # тут так надо, тот, кто удалит - лох
         if "Saturn2" in name:
-            return 'Сатурн-2', ''
+            return "Сатурн-2", ""
         if name == "SVSL-811-Kalicha-ASW1":
-            return 'Калича', '15'
+            return "Калича", "15"
 
         if house_zabbix is None:
             house_zabbix = ""
@@ -272,13 +273,9 @@ def get_info_from_zabbix_node(name: str) -> Tuple[str, str]:
         house = house.lower()
         house = replace_english_with_russian(house)
 
-        street = dr_dict.get(street_zabbix)  # Проверяем улицу в первом словаре dr_dict
-        if street is None:  # Если в первом словаре нет, то берем данные из второго словаря dr_dict_jr
-            res = dr_dict_jr.get(street_zabbix)
-            if res:
-                return res
-            else:
-                return '', ''
+        street = dr_dict.get(street_zabbix, "")  # Проверяем улицу в первом словаре dr_dict
+        if not street:  # Если в первом словаре нет, то берем данные из второго словаря dr_dict_jr
+            return dr_dict_jr.get(street_zabbix) or ("", "")
 
     return street, house
 
@@ -286,20 +283,19 @@ def get_info_from_zabbix_node(name: str) -> Tuple[str, str]:
 def replace_english_with_russian(text: str) -> str:
     # Создаем словарь для замены символов
     translation_dict = {
-        'a': 'а',
-        'b': 'б',
-        'v': 'в',
-        'g': 'г',
-        'd': 'д',
-        'e': 'е',
-
-        'k': '/',
-        '.': '/',
-        '-': '/',
+        "a": "а",
+        "b": "б",
+        "v": "в",
+        "g": "г",
+        "d": "д",
+        "e": "е",
+        "k": "/",
+        ".": "/",
+        "-": "/",
     }
 
     # Проходим по каждому символу в строке и заменяем его, если он есть в словаре
-    result = ''
+    result = ""
     for char in text:
         if char.lower() in translation_dict:
             result += translation_dict[char.lower()]

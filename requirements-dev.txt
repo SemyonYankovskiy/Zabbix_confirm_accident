@@ -4,3 +4,4 @@ lxml
 geopy
 mypy
 pylint
+pika-stubs

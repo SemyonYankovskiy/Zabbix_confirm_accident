@@ -44,12 +44,8 @@ def has_outages(input_address: tuple, json_file_content: list) -> str:
             print(f"{input_address} Адреc, дом, дата - ОК")
             time_str = f"{times[0][0][11:16]}-{times[0][1][11:16]}"
 
-            return "Плановые работы СЭ: "+time_str
+            return "Плановые работы СЭ: " + time_str
 
         # Адрес не найден
         continue
     return ""
-
-
-
-

@@ -1,6 +1,7 @@
 .idea
 venv
 
+certs
 py_log.txt
 
 data-*.json

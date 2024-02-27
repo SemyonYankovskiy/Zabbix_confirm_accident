@@ -7,9 +7,9 @@ from requests import Session
 class ZabbixAPIConnection:
     """Конфигурация для работы с Zabbix API"""
 
-    ZABBIX_URL: str = os.getenv("ZABBIX_URL")
-    ZABBIX_USER: str = os.getenv("ZABBIX_USER")
-    ZABBIX_PASSWORD: str = os.getenv("ZABBIX_PASSWORD")
+    ZABBIX_URL: str = os.getenv("ZABBIX_URL", "")
+    ZABBIX_USER: str = os.getenv("ZABBIX_USER", "")
+    ZABBIX_PASSWORD: str = os.getenv("ZABBIX_PASSWORD", "")
 
     def __init__(self, timeout: int = 2):
         self.timeout = timeout

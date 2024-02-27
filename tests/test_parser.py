@@ -37,9 +37,7 @@ class TestParser(TestCase):
 
     @classmethod
     def setUpClass(cls) -> None:
-        cls.url = (
-            "https://sevenergo.net/news/kalendar-otklyuchenij-elektroenergii/697.html"
-        )
+        cls.url = "https://sevenergo.net/news/kalendar-otklyuchenij-elektroenergii/697.html"
         cls.valid = [
             {
                 "address": "ул. Севастопольская зона ЮБК",
@@ -113,9 +111,7 @@ class TestParser(TestCase):
 class TestParser2(TestParser):
     @classmethod
     def setUpClass(cls):
-        cls.url = (
-            "https://sevenergo.net/news/kalendar-otklyuchenij-elektroenergii/696.html"
-        )
+        cls.url = "https://sevenergo.net/news/kalendar-otklyuchenij-elektroenergii/696.html"
         cls.valid = [
             {
                 "address": "ул. Колобова",
@@ -133,9 +129,7 @@ class TestParser2(TestParser):
 class TestParser3(TestParser):
     @classmethod
     def setUpClass(cls):
-        cls.url = (
-            "https://sevenergo.net/news/kalendar-otklyuchenij-elektroenergii/695.html"
-        )
+        cls.url = "https://sevenergo.net/news/kalendar-otklyuchenij-elektroenergii/695.html"
         cls.valid = [
             {
                 "address": "ул. Сапунгорская",
@@ -245,9 +239,7 @@ class TestParser3(TestParser):
 class TestParser4(TestParser):
     @classmethod
     def setUpClass(cls):
-        cls.url = (
-            "https://sevenergo.net/news/kalendar-otklyuchenij-elektroenergii/680.html"
-        )
+        cls.url = "https://sevenergo.net/news/kalendar-otklyuchenij-elektroenergii/680.html"
         cls.valid = [
             {
                 "address": "пр. Генерала Острякова",
@@ -263,30 +255,30 @@ class TestParser4(TestParser):
                     "213",
                 ],
                 "times": [
-                    [
+                    (
                         datetime(2024, 1, 16, 8, 0),
                         datetime(2024, 1, 16, 16, 0),
-                    ]
+                    )
                 ],
             },
             {
                 "address": "ул. Щелкунова",
                 "houses": ["1"],
                 "times": [
-                    [
+                    (
                         datetime(2024, 1, 16, 11, 0),
                         datetime(2024, 1, 16, 16, 0),
-                    ]
+                    )
                 ],
             },
             {
                 "address": "пр. Гагарина",
                 "houses": ["50", "41а", "25", "29"],
                 "times": [
-                    [
+                    (
                         datetime(2024, 1, 16, 11, 0),
                         datetime(2024, 1, 16, 16, 0),
-                    ]
+                    )
                 ],
             },
         ]
@@ -295,9 +287,7 @@ class TestParser4(TestParser):
 class TestParser5(TestParser):
     @classmethod
     def setUpClass(cls):
-        cls.url = (
-            "https://sevenergo.net/news/kalendar-otklyuchenij-elektroenergii/689.html"
-        )
+        cls.url = "https://sevenergo.net/news/kalendar-otklyuchenij-elektroenergii/689.html"
         cls.valid = [
             {
                 "address": "пос. Октябрь, ул. 19-го Партсъезда",
@@ -546,9 +536,7 @@ class TestParser5(TestParser):
 class TestParser6(TestParser):
     @classmethod
     def setUpClass(cls):
-        cls.url = (
-            "https://sevenergo.net/news/kalendar-otklyuchenij-elektroenergii/659.html"
-        )
+        cls.url = "https://sevenergo.net/news/kalendar-otklyuchenij-elektroenergii/659.html"
         cls.valid = [
             {
                 "address": "с. Орлиное, ул. Тюкова",
@@ -596,9 +584,7 @@ class TestParser6(TestParser):
 class TestParser7(TestParser):
     @classmethod
     def setUpClass(cls):
-        cls.url = (
-            "https://sevenergo.net/news/kalendar-otklyuchenij-elektroenergii/706.html"
-        )
+        cls.url = "https://sevenergo.net/news/kalendar-otklyuchenij-elektroenergii/706.html"
         cls.valid = [
             {
                 "address": "Федюхины высоты (ООО Севастопольский военно-исторический клуб)",

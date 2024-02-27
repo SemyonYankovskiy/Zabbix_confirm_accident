@@ -3,3 +3,5 @@ requests
 lxml
 geopy
 pyzabbix
+pika
+orjson
