@@ -43,6 +43,7 @@ class YaMap:
             headers={
                 "User-Agent": random.choice(USER_AGENTS),
             },
+            timeout=10,
         )
         if resp.status_code != 200:
             print(address, resp.status_code, resp.url, resp.text)

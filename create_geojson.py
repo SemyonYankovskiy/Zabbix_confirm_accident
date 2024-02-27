@@ -41,17 +41,25 @@ def main():
 
     with ThreadPoolExecutor(max_workers=200) as executor:
         for item in data:
-            for house in item["houses"]:
-                for time in item["times"]:
-                    # Обрабатываем только отключения, которые активны сейчас.
-                    if (
-                        datetime.strptime(time[0], "%Y-%m-%d %H:%M:%S")
-                        <= now
-                        <= datetime.strptime(time[1], "%Y-%m-%d %H:%M:%S")
-                    ):
-                        address = "Севастополь, " + item["address"] + ", " + house
-                        executor.submit(find_address_and_append, address, geojson)
-                        break
+            address = "Севастополь, " + item["address"]
+
+            for time in item["times"]:
+                # Обрабатываем только отключения, которые активны сейчас.
+                if not (
+                    datetime.strptime(time[0], "%Y-%m-%d %H:%M:%S")
+                    <= now
+                    <= datetime.strptime(time[1], "%Y-%m-%d %H:%M:%S")
+                ):
+                    continue
+
+                if not item.get("houses"):
+                    executor.submit(find_address_and_append, address, geojson)
+                    continue
+
+                for house in item["houses"]:
+                    address += ", " + house
+                    executor.submit(find_address_and_append, address, geojson)
+                    break
 
     geojson.create_file(f"outages-{date.today()}.geojson")
 
