@@ -35,8 +35,8 @@ def has_outages(input_address: tuple, json_file_content: list) -> str:
     for item in json_file_content:
 
         times = item.get("times")
-        street_match = re.search(street, str(item.values()))
-        house_match = any(input_address[1] in x for x in item.get("houses"))
+        street_match = re.search(street, item.get("address", ""))
+        house_match = input_address[1] in item.get("houses","")
         date_match = re.search(str(date.today()), str(item.get("times")))
 
         if street_match and house_match and date_match:
