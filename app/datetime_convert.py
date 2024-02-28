@@ -135,7 +135,7 @@ def current_str_to_datetime_ranges(input_str):
 
     if "по" in parts:
         end_day = int(parts[parts.index("по") + 1])
-        end_month = months[parts[parts.index("по") + 2]]
+        # end_month = months[parts[parts.index("по") + 2]]
 
     date_ranges = [(start_date, end_date)]
     if "по" in parts:

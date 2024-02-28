@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import ClassVar
 from unittest import TestCase
 
 from app.address_convert import address_cleaner, house_splitter
@@ -7,6 +8,8 @@ from app.parser import content_parser, get_planned_outage_data, current_outages,
 
 
 class TestParser(TestCase):
+    url = None  # type: ClassVar[str]
+    valid = None  # type: ClassVar[list]
 
     def test_parser(self):
         self.maxDiff = None

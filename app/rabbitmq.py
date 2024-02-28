@@ -5,8 +5,8 @@ import pika
 from pika import exceptions
 
 
-class RabbitMQConnection:
-    class _Config:  # pylint: disable=too-few-public-methods
+class RabbitMQConnection:  # pylint: disable=too-few-public-methods
+    class _Config:
         user: str = os.getenv("RABBITMQ_USER", "")
         password: str = os.getenv("RABBITMQ_PASSWORD", "")
         host: str = os.getenv("RABBITMQ_HOST", "")

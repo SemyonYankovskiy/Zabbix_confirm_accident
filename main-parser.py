@@ -1,5 +1,6 @@
 import json
 import logging
+import pathlib
 from datetime import date
 
 from app.address_convert import house_splitter, address_cleaner
@@ -39,7 +40,10 @@ def main():
 
     json_string = json.dumps(list_of_outages, indent=2, ensure_ascii=False, default=str)
 
-    with open(f"data-{date.today()}.json", "w", encoding="utf-8") as outfile:
+    folder = pathlib.Path(__file__).parent / "outages"
+    folder.mkdir(exist_ok=True, parents=True)
+
+    with (folder / f"{date.today()}.json").open("w", encoding="utf-8") as outfile:
         outfile.write(json_string)
 
     print(json_string)

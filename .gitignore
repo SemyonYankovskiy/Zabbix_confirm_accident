@@ -2,6 +2,7 @@
 venv
 
 certs
+outages
 py_log.txt
 
 data-*.json

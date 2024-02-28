@@ -34,7 +34,11 @@ def main():
     которые в данный момент актуальны в метки с координатами и создает
     новый файл `outages-YYYY-DD-MM.geojson`
     """
-    data = json.load(open(f"data-{date.today()}.json", encoding="utf-8"))
+    try:
+        data = json.load(open(f"outages/{date.today()}.json", encoding="utf-8"))
+    except FileNotFoundError as exc:
+        print(exc)
+        return
 
     geojson = GeoJSON()
     now = datetime.now()
@@ -61,7 +65,7 @@ def main():
                     executor.submit(find_address_and_append, address, geojson)
                     break
 
-    geojson.create_file(f"outages-{date.today()}.geojson")
+    geojson.create_file(f"outages/{date.today()}.geojson")
 
 
 if __name__ == "__main__":

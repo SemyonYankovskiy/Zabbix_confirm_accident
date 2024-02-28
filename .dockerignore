@@ -1,0 +1,9 @@
+*
+!app
+!geo_map
+!tests
+!consumer.py
+!create_geojson.py
+!main-parser.py
+!requirements.txt
+!requirements-dev.txt

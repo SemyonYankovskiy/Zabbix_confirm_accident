@@ -1,7 +1,5 @@
-beautifulsoup4
-requests
-lxml
-geopy
 mypy
+types-requests
+types-beautifulsoup4
 pylint
 pika-stubs

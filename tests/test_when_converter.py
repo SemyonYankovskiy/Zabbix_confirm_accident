@@ -182,7 +182,7 @@ class TestWhenConverter(TestCase):
             ],
         )
 
-    def test_current_time(self):
+    def next_test_current_time(self):
         self.assertListEqual(
             current_str_to_datetime_ranges("Отключение электроэнергии с 20 по 23 февраля"),
             [

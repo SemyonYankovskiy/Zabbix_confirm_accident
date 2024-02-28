@@ -1,0 +1,25 @@
+version: "${COMPOSE_API_VERSION}"
+
+services:
+
+  parser: &base
+    image: ${IMAGE_NAME}:${IMAGE_TAG}
+    build: .
+    command: main-parser.py
+    volumes:
+      - "./outages:/app/outages"
+
+  consumer:
+    <<: *base
+    command: consumer.py
+    extra_hosts:
+      - "${EXTRA_HOST}"
+    volumes:
+      - "./outages:/app/outages"
+      - "./certs:/app/certs:ro"
+    environment:
+      RABBITMQ_CACERT: "/app/certs/root.crt"
+      RABBITMQ_CERTFILE: "/app/certs/client.crt"
+      RABBITMQ_KEYFILE: "/app/certs/client.key"
+    env_file:
+      - ".env"

@@ -134,7 +134,7 @@ def current_outages():
     content = ''
     header = ''
     months = ['января', 'февраля', 'марта', 'апреля', 'мая', 'июня', 'июля', 'август', 'сентября', 'октября', 'ноября', 'декабря']
-    resp = requests.get('https://sevenergo.net/news/incident.html')
+    resp = requests.get('https://sevenergo.net/news/incident.html', timeout=10)
     if resp.status_code == 200:
         today = date.today()
 
@@ -142,7 +142,7 @@ def current_outages():
         links = soup.findAll('a', string=re.compile(rf'[0]*{today.day} {months[today.month - 1]}'))
 
         for l in links:
-            resp = requests.get('https://sevenergo.net' + l.attrs['href'])
+            resp = requests.get('https://sevenergo.net' + l.attrs['href'], timeout=10)
             if resp.status_code == 200:
                 soup = BeautifulSoup(resp.text, 'lxml')
                 header = soup.find('div', {'class': 'article-header'})
@@ -222,4 +222,3 @@ def current_content_parser(
         result.append((address, houses, current_time_ranges))
 
     return result
-
