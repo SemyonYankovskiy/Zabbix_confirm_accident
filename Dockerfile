@@ -3,7 +3,7 @@ LABEL authors="syankovsky,irudenko"
 
 ENV PYTHONUNBUFFERED 1
 
-RUN addgroup -S appgroup && adduser -S appuser -G appgroup
+RUN addgroup -S appgroup && adduser -S appuser -G appgroup;
 
 USER appuser
 
@@ -17,5 +17,7 @@ RUN pip install --no-cache-dir --upgrade pip && \
     pip install --no-cache-dir -r requirements-dev.txt;
 
 COPY . .
+
+RUN chown -R appuser:appgroup /app;
 
 ENTRYPOINT ["python"]
