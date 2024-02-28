@@ -29,3 +29,8 @@ class ZabbixAPIConnection:
         )
         self._zabbix_connection.login(user=self.ZABBIX_USER, password=self.ZABBIX_PASSWORD)
         return self._zabbix_connection
+
+
+def event_acknowledge(event_id: str, message_text: str):
+    with ZabbixAPIConnection().connect() as zbx:
+        zbx.event.acknowledge(eventids=event_id, action="4", message=message_text)
