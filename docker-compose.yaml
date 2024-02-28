@@ -7,7 +7,7 @@ services:
     build: .
     command: main-parser.py
     volumes:
-      - "./outages:/app/outages"
+      - "outages:/app/outages"
 
   consumer:
     <<: *base
@@ -23,3 +23,6 @@ services:
       RABBITMQ_KEYFILE: "/app/certs/client.key"
     env_file:
       - ".env"
+
+volumes:
+  outages:
