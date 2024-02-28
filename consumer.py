@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import date, datetime
 
 import orjson
 from pika.adapters.blocking_connection import BlockingChannel
@@ -21,17 +21,17 @@ def message_callback(
         print("Invalid JSON")
         return
 
-    event_id = data.get("EventID")
-    host_name = data.get("HostName")
+    event_id = data.get("event", {}).get("id")
+    host_name = data.get("device", {}).get("name")
 
     street, house = get_info_from_zabbix_node(host_name)
 
-    if not street and not house:
+    if not (street or house or event_id or host_name):
         return
 
     file_data = cache.get_or_cache(60 * 60, json_opener, f"data-{date.today()}.json")
 
-    text_outages = has_outages((street, house), file_data)
+    text_outages = has_outages((street, house), datetime.now(), file_data)
     if text_outages:
         event_acknowledge(event_id, text_outages)
 
