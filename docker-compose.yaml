@@ -1,9 +1,9 @@
-version: "${COMPOSE_API_VERSION}"
+version: "2.2"
 
 services:
 
   parser: &base
-    image: ${IMAGE_NAME}:${IMAGE_TAG}
+    image: zabbix-confirm-accident:0.1
     build: .
     command: main-parser.py
     volumes:
