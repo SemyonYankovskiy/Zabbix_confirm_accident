@@ -8,7 +8,7 @@ from app.address_to_verbose import get_info_from_zabbix_node
 from app.cache import cache
 from app.has_outages import json_opener, has_outages
 from app.rabbitmq import RabbitMQConnection
-from tests.test_acknowledge_event import event_acknowledge
+from app.zabbix_session_and_acknowledge import event_acknowledge
 
 
 def message_callback(
