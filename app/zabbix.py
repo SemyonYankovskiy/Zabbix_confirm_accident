@@ -1,9 +1,9 @@
-import os
-
 import urllib3
 from pyzabbix import ZabbixAPI
 from requests import Session
 from urllib3.exceptions import InsecureRequestWarning
+
+from app.misc import get_environ
 
 urllib3.disable_warnings(category=InsecureRequestWarning)
 
@@ -11,9 +11,9 @@ urllib3.disable_warnings(category=InsecureRequestWarning)
 class ZabbixAPIConnection:
     """Конфигурация для работы с Zabbix API"""
 
-    ZABBIX_URL: str = os.getenv("ZABBIX_URL", "")
-    ZABBIX_USER: str = os.getenv("ZABBIX_USER", "")
-    ZABBIX_PASSWORD: str = os.getenv("ZABBIX_PASSWORD", "")
+    ZABBIX_URL: str = get_environ("ZABBIX_URL")
+    ZABBIX_USER: str = get_environ("ZABBIX_USER")
+    ZABBIX_PASSWORD: str = get_environ("ZABBIX_PASSWORD")
 
     def __init__(self, timeout: int = 2):
         self.timeout = timeout
