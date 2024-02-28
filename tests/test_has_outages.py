@@ -72,6 +72,27 @@ class TestAddressToVerboseConverter(TestCase):
         self.assertEqual(valid, result)
 
     def test_has_outages4(self):
+        """Отключение закончится в следующий день"""
+        time_from = datetime.strptime(f"2024-02-28 08:00:00", self.dt_format)
+        time_to = datetime.strptime(f"2024-02-29 17:00:00", self.dt_format)
+        # За 12 минут до начала работ, но это в пределах обработки.
+        check_time = datetime.strptime(f"2024-02-28 11:00:00", self.dt_format)
+
+        list_of_outages = [
+            {
+                "address": "Вакуленчука",
+                "houses": ["22"],
+                "times": [[time_from.strftime(self.dt_format), time_to.strftime(self.dt_format)]],
+            }
+        ]
+
+        address_from_zabbix = ("Вакуленчука", "22")
+        valid = "Плановые работы СЭ: с 28.02.2024 08:00 до 29.02.2024 17:00"
+
+        result = has_outages(address_from_zabbix, check_time, list_of_outages)
+        self.assertEqual(valid, result)
+
+    def test_has_outages5(self):
         """Отключение скоро начнется ~10 мин"""
         time_from = datetime.strptime(f"2024-02-28 10:00:00", self.dt_format)
         time_to = datetime.strptime(f"2024-02-28 12:00:00", self.dt_format)
@@ -92,7 +113,7 @@ class TestAddressToVerboseConverter(TestCase):
         result = has_outages(address_from_zabbix, check_time, list_of_outages)
         self.assertEqual(valid, result)
 
-    def test_has_outages5(self):
+    def test_has_outages6(self):
         """Неверный адрес"""
         address_from_zabbix = ("рмпитанос т саа", "пмаирнеснс")
         valid = ""
@@ -100,7 +121,7 @@ class TestAddressToVerboseConverter(TestCase):
         result = has_outages(address_from_zabbix, self.check_date, self.outages)
         self.assertEqual(valid, result)
 
-    def test_has_outages6(self):
+    def test_has_outages7(self):
         """Пустой адрес"""
         address_from_zabbix = ("", "")
         valid = ""
@@ -108,7 +129,7 @@ class TestAddressToVerboseConverter(TestCase):
         result = has_outages(address_from_zabbix, self.check_date, self.outages)
         self.assertEqual(valid, result)
 
-    def test_has_outages7_village(self):
+    def test_has_outages8_village(self):
         """Проверка адреса с селом"""
         #  Содержимое файла
         list_of_outages = [

@@ -50,14 +50,13 @@ def has_outages(input_address: Tuple[str, str], check_datetime: datetime, json_f
             dt_to: datetime = datetime.strptime(datetime_range[1], "%Y-%m-%d %H:%M:%S")
             if dt_from - timedelta(minutes=15) <= check_datetime <= dt_to + timedelta(minutes=15):
 
+                verbose_format = (
+                    "%H:%M" if dt_from.date() == dt_to.date() == check_datetime.date() else "%d.%m.%Y %H:%M"
+                )
                 verbose = "Плановые работы СЭ: с "
-                verbose += dt_from.strftime(
-                    "%H:%M" if dt_from.date() == check_datetime.date() else "%d %b %Y %H:%M:%S"
-                )
+                verbose += dt_from.strftime(verbose_format)
                 verbose += " до "
-                verbose += dt_to.strftime(
-                    "%H:%M" if dt_to.date() == check_datetime.date() else "%d %b %Y %H:%M:%S"
-                )
+                verbose += dt_to.strftime(verbose_format)
                 return verbose
 
     return ""
