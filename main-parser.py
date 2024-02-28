@@ -9,7 +9,6 @@ from app.parser import get_planned_outage_data, get_planned_outages_urls, conten
 
 logging.basicConfig(
     level=logging.DEBUG,
-    filename="py_log.txt",
     filemode="a",
     format="%(asctime)s - %(levelname)s - %(name)s - %(message)s",
 )

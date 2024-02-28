@@ -5,11 +5,8 @@
 Перед запуском нужно создать файл `.env` и указать в нём 
 переменные окружения, которые обозначены в `env.sample`
 
-    COMPOSE_API_VERSION     # Версия docker-compose
-    IMAGE_NAME              # Название образа - zabbix-confirm-accident
-    IMAGE_TAG               # Тег образа, версия - 0.1
     EXTRA_HOST              # Для соответствия домена и IP адреса RabbitMQ в формате: domain:ip
-    
+
     RABBITMQ_USER           # Пользователь RabbitMQ
     RABBITMQ_PASSWORD       # Пароль пользователя
     RABBITMQ_HOST           # Домен RabbitMQ
