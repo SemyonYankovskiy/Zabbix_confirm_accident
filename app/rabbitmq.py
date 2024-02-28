@@ -36,6 +36,7 @@ class RabbitMQConnection:
 
     def start_consuming(self, callback):
         while True:
+            print("Starting consumer...")
             connection = pika.BlockingConnection(self._rmq_url_connection_str)
             try:
                 with connection.channel() as channel:

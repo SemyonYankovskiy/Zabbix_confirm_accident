@@ -8,7 +8,7 @@ from app.address_to_verbose import get_info_from_zabbix_node
 from app.cache import cache
 from app.has_outages import json_opener, has_outages
 from app.rabbitmq import RabbitMQConnection
-from app.zabbix_session_and_acknowledge import event_acknowledge
+from app.zabbix import event_acknowledge
 
 
 def message_callback(
@@ -26,20 +26,17 @@ def message_callback(
 
     street, house = get_info_from_zabbix_node(host_name)
 
+    if not street and not house:
+        return
+
     file_data = cache.get_or_cache(60 * 60, json_opener, f"data-{date.today()}.json")
 
     text_outages = has_outages((street, house), file_data)
-
     if text_outages:
         event_acknowledge(event_id, text_outages)
 
 
-def main():
+if __name__ == "__main__":
     connection = RabbitMQConnection()
     print("Connected to RabbitMQ")
-    print("Starting consumer...")
     connection.start_consuming(callback=message_callback)
-
-
-if __name__ == "__main__":
-    main()

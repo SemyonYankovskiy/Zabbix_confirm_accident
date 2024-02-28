@@ -14,6 +14,11 @@
     RABBITMQ_QUEUE
     RABBITMQ_ROUTING_KEY
 
+    ZABBIX_URL
+    ZABBIX_USER
+    ZABBIX_PASSWORD
+
+Команда запуска:
 
 ```shell
 python consumer.py

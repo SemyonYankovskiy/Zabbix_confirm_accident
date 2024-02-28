@@ -40,8 +40,11 @@ def has_outages(input_address: Tuple[str, str], json_file_content: list) -> str:
         date_match = re.search(str(date.today()), str(item.get("times")))
 
         if not house_match:
-            house = re.search(r"(\d+)", input_address[1]).group(0)
-            house_match = house in item.get("houses", "")
+            house = re.search(r"(\d+)", input_address[1])
+            if house is not None:
+                house_match = house.group(0) in item.get("houses", "")
+            else:
+                house_match = ""
 
         if street_match and house_match and date_match:
             # Адрес найден, возвращаем значение times как строку

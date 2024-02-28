@@ -1,7 +1,11 @@
 import os
 
+import urllib3
 from pyzabbix import ZabbixAPI
 from requests import Session
+from urllib3.exceptions import InsecureRequestWarning
+
+urllib3.disable_warnings(category=InsecureRequestWarning)
 
 
 class ZabbixAPIConnection:

@@ -1,53 +1,38 @@
-import json
 from datetime import date
+from typing import ClassVar
 from unittest import TestCase
 
-from app.has_outages import has_outages, json_opener
-
-#  Создание файла json
-#  Название файла
-json_file_name = f"data-{date.today()}.json"
-#  Содержимое файла
-list_of_outages = [
-    {
-        "address": "Курчатова",
-        "houses": ["1"],
-        "times": [[f"{date.today()} 08:00:00", f"{date.today()} 16:00:00"]],
-    },
-    {
-        "address": "Вакуленчука",
-        "houses": ["22"],
-        "times": [[f"{date.today()} 08:00:00", f"{date.today()} 16:00:00"]],
-    },
-]
-
-#  Запись в файл
-json_string = json.dumps(list_of_outages, indent=2, ensure_ascii=False, default=str)
-with open(json_file_name, "w", encoding="utf-8") as outfile:
-    outfile.write(json_string)
+from app.has_outages import has_outages
 
 
 class TestAddressToVerboseConverter(TestCase):
+    outages = None  # type: ClassVar[list]
+
+    @classmethod
+    def setUpClass(cls):
+        cls.outages = [
+            {
+                "address": "Курчатова",
+                "houses": ["1"],
+                "times": [[f"{date.today()} 08:00:00", f"{date.today()} 16:00:00"]],
+            },
+            {
+                "address": "Вакуленчука",
+                "houses": ["22"],
+                "times": [[f"{date.today()} 08:00:00", f"{date.today()} 16:00:00"]],
+            },
+        ]
 
     def test_has_outages(self):
         address_from_zabbix = ("Вакуленчука", "22")
         valid = "Плановые работы СЭ: 08:00-16:00"
 
-        json_file_content = json_opener(json_file_name)
-
-        result = has_outages(address_from_zabbix, json_file_content)
+        result = has_outages(address_from_zabbix, self.outages)
         print(result)
         self.assertEqual(valid, result)
 
     def test_has_outages2(self):
-        """
-        Неверная дата
-
-        """
-        #  Создание файла json
-        #  Название файла
-        json_file_name = f"data-{date.today()}.json"
-        #  Содержимое файла
+        """Неверная дата"""
         list_of_outages = [
             {
                 "address": "Вакуленчука",
@@ -56,18 +41,10 @@ class TestAddressToVerboseConverter(TestCase):
             }
         ]
 
-        #  Запись в файл
-        json_string = json.dumps(list_of_outages, indent=2, ensure_ascii=False, default=str)
-        with open(json_file_name, "w", encoding="utf-8") as outfile:
-            outfile.write(json_string)
-
         address_from_zabbix = ("Вакуленчука", "22")
         valid = ""
 
-        json_file_content = json_opener(json_file_name)
-
-        result = has_outages(address_from_zabbix, json_file_content)
-        print(result)
+        result = has_outages(address_from_zabbix, list_of_outages)
         self.assertEqual(valid, result)
 
     def test_has_outages3(self):
@@ -75,10 +52,7 @@ class TestAddressToVerboseConverter(TestCase):
         address_from_zabbix = ("рмпитанос т саа", "пмаирнеснс")
         valid = ""
 
-        json_file_content = json_opener(json_file_name)
-
-        result = has_outages(address_from_zabbix, json_file_content)
-        print(result)
+        result = has_outages(address_from_zabbix, self.outages)
         self.assertEqual(valid, result)
 
     def test_has_outages4(self):
@@ -86,16 +60,10 @@ class TestAddressToVerboseConverter(TestCase):
         address_from_zabbix = ("", "")
         valid = ""
 
-        json_file_content = json_opener(json_file_name)
-
-        result = has_outages(address_from_zabbix, json_file_content)
-        print(result)
+        result = has_outages(address_from_zabbix, self.outages)
         self.assertEqual(valid, result)
 
     def test_has_outages_village(self):
-        #  Создание файла json
-        #  Название файла
-        json_file_name = f"data-{date.today()}.json"
         #  Содержимое файла
         list_of_outages = [
             {
@@ -120,15 +88,8 @@ class TestAddressToVerboseConverter(TestCase):
             }
         ]
 
-        #  Запись в файл
-        json_string = json.dumps(list_of_outages, indent=2, ensure_ascii=False, default=str)
-        with open(json_file_name, "w", encoding="utf-8") as outfile:
-            outfile.write(json_string)
-
         address_from_zabbix = (r"Терновка(.+?)Ленина", "2")
         valid = "Плановые работы СЭ: 08:00-16:00"
 
-        json_file_content = json_opener(json_file_name)
-        result = has_outages(address_from_zabbix, json_file_content)
-        print(result)
+        result = has_outages(address_from_zabbix, list_of_outages)
         self.assertEqual(valid, result)
