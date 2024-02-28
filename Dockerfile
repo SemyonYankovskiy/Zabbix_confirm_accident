@@ -5,8 +5,6 @@ ENV PYTHONUNBUFFERED 1
 
 RUN addgroup -S appgroup && adduser -S appuser -G appgroup;
 
-USER appuser
-
 WORKDIR /app
 
 COPY requirements-dev.txt .
@@ -19,5 +17,7 @@ RUN pip install --no-cache-dir --upgrade pip && \
 COPY . .
 
 RUN chown -R appuser:appgroup /app;
+
+USER appuser
 
 ENTRYPOINT ["python"]
