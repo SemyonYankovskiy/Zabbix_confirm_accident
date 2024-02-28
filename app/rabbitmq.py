@@ -1,11 +1,8 @@
 import os
 import ssl
 
-import orjson
 import pika
 from pika import exceptions
-from pika.adapters.blocking_connection import BlockingChannel
-from pika.spec import BasicProperties, Basic
 
 
 class RabbitMQConnection:
@@ -37,18 +34,7 @@ class RabbitMQConnection:
             ),
         )
 
-    @staticmethod
-    def message_callback(
-        ch: BlockingChannel, method: Basic.Deliver, properties: BasicProperties, body: bytes
-    ) -> None:
-        print(type(ch), type(method), type(properties), type(body))
-        try:
-            data: dict = orjson.loads(body)  # pylint: disable=maybe-no-member
-            print(data)
-        except orjson.JSONDecodeError:  # pylint: disable=maybe-no-member
-            print("Invalid JSON")
-
-    def start_consuming(self):
+    def start_consuming(self, callback):
         while True:
             connection = pika.BlockingConnection(self._rmq_url_connection_str)
             try:
@@ -65,7 +51,7 @@ class RabbitMQConnection:
                         )
                         channel.basic_consume(
                             queue=self._Config.queue_name,
-                            on_message_callback=self.message_callback,
+                            on_message_callback=callback,
                             auto_ack=True,
                         )
                         channel.start_consuming()
