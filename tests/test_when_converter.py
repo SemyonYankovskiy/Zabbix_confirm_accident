@@ -1,7 +1,7 @@
 from datetime import datetime
 from unittest import TestCase
 
-from app.datetime_convert import str_to_datetime_ranges
+from app.datetime_convert import str_to_datetime_ranges, current_str_to_datetime_ranges
 
 
 class TestWhenConverter(TestCase):
@@ -178,6 +178,40 @@ class TestWhenConverter(TestCase):
                 (
                     datetime.strptime("08:00:00 01.01.2025", "%H:%M:%S %d.%m.%Y"),
                     datetime.strptime("17:00:00 01.01.2025", "%H:%M:%S %d.%m.%Y"),
+                ),
+            ],
+        )
+
+    def test_current_time(self):
+        self.assertListEqual(
+            current_str_to_datetime_ranges("Отключение электроэнергии с 20 по 23 февраля"),
+            [
+                (
+                    datetime.strptime("08:00:00 20.02.2024", "%H:%M:%S %d.%m.%Y"),
+                    datetime.strptime("17:00:00 20.02.2024", "%H:%M:%S %d.%m.%Y"),
+                ),
+                (
+                    datetime.strptime("08:00:00 21.02.2024", "%H:%M:%S %d.%m.%Y"),
+                    datetime.strptime("17:00:00 21.02.2024", "%H:%M:%S %d.%m.%Y"),
+                ),
+                (
+                    datetime.strptime("08:00:00 22.02.2025", "%H:%M:%S %d.%m.%Y"),
+                    datetime.strptime("17:00:00 22.02.2025", "%H:%M:%S %d.%m.%Y"),
+                ),
+                (
+                    datetime.strptime("08:00:00 23.02.2025", "%H:%M:%S %d.%m.%Y"),
+                    datetime.strptime("17:00:00 23.02.2025", "%H:%M:%S %d.%m.%Y"),
+                ),
+            ],
+        )
+
+    def test_current_time1(self):
+        self.assertListEqual(
+            current_str_to_datetime_ranges("Отключение электроэнергии 28 января"),
+            [
+                (
+                    datetime.strptime("08:00:00 28.01.2024", "%H:%M:%S %d.%m.%Y"),
+                    datetime.strptime("17:00:00 28.01.2024", "%H:%M:%S %d.%m.%Y"),
                 ),
             ],
         )

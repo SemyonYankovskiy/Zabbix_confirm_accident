@@ -1,5 +1,5 @@
 import re
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import List, Tuple
 
 
@@ -116,3 +116,33 @@ def update_datetime_pair(pair: Tuple[datetime, datetime], time_correction: str) 
         return new_time_from, new_time_to
 
     return pair
+
+
+def current_str_to_datetime_ranges(input_str):
+    months = {
+        "января": 1, "февраля": 2, "марта": 3, "апреля": 4,
+        "мая": 5, "июня": 6, "июля": 7, "августа": 8,
+        "сентября": 9, "октября": 10, "ноября": 11, "декабря": 12
+    }
+
+    current_year = datetime.now().year
+
+    parts = input_str.split()
+    start_day = int(parts[-2])
+    start_month = months[parts[-1]]
+    start_date = datetime(current_year, start_month, start_day, 8, 0, 0)
+    end_date = datetime(current_year, start_month, start_day, 17, 0, 0)
+
+    if "по" in parts:
+        end_day = int(parts[parts.index("по") + 1])
+        end_month = months[parts[parts.index("по") + 2]]
+
+    date_ranges = [(start_date, end_date)]
+    if "по" in parts:
+        days = end_day - start_day + 1
+        for i in range(1, days):
+            new_start = start_date + timedelta(days=i)
+            new_end = end_date + timedelta(days=i)
+            date_ranges.append((new_start, new_end))
+
+    return date_ranges

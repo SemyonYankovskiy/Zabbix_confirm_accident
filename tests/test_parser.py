@@ -3,7 +3,7 @@ from unittest import TestCase
 
 from app.address_convert import address_cleaner, house_splitter
 from app.datetime_convert import str_to_datetime_ranges
-from app.parser import content_parser, get_planned_outage_data
+from app.parser import content_parser, get_planned_outage_data, current_outages, current_content_parser
 
 
 class TestParser(TestCase):
@@ -1011,3 +1011,6 @@ class TestParser7(TestParser):
                 ],
             },
         ]
+    def test_current_outages(self):
+        outages, time_range = current_outages()
+        print(current_content_parser(outages, time_range))
