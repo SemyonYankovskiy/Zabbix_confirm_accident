@@ -3,9 +3,9 @@ LABEL authors="syankovsky,irudenko"
 
 ENV PYTHONUNBUFFERED 1
 
-RUN addgroup --system app && adduser --system --group app;
+RUN addgroup -S appgroup && adduser -S appuser -G appgroup
 
-USER app
+USER appuser
 
 WORKDIR /app
 
