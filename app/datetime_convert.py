@@ -127,9 +127,23 @@ def current_str_to_datetime_ranges(input_str):
 
     current_year = datetime.now().year
 
+    day_and_months = re.search(r'(\d.+?) +(января|февраля|марта|апреля|мая|июня|июля|августа|сентрября|октября|ноября|декабря)',input_str)
 
-    day_and_months = re.search(r'(\d+) (января|февраля|марта|апреля|мая|июня|июля|августа|сентрября|октября|ноября|декабря)',input_str)
-    day = int(day_and_months.group(1))
+    day = day_and_months.group(1)
+    print(day)
+    if re.match(r'^\d+$', day):
+        print(f"Простая дата: {day}")
+        day = int(day)
+    elif re.match(r'^\d+(,\d+)+(\sи\s\d+)?$', day):
+        print(f"Несколько дат: {day}")
+    elif re.match(r'^\d+\sпо\s\d+$', day):
+        print(f"Диапазон дат: {day}")
+
+    elif re.match(r'^\d+\-\d+$', day):
+        print(f"Диапазон дат через тире: {day}")
+    else:
+        print(f"Некорректный формат: {day}")
+
     month_verb = day_and_months.group(2)
     month_num = int(months.get(month_verb))
 
