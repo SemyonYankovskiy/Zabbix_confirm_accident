@@ -3,8 +3,8 @@ from typing import ClassVar
 from unittest import TestCase
 
 from app.address_convert import address_cleaner, house_splitter
-from app.datetime_convert import str_to_datetime_ranges
-from app.parser import content_parser, get_planned_outage_data, current_outages, current_content_parser
+from app.datetime_convert import str_to_datetime_ranges, current_str_to_datetime_ranges
+from app.parser import content_parser, get_planned_outage_data, get_current_outage_data
 
 
 class TestParser(TestCase):
@@ -1014,6 +1014,52 @@ class TestParser7(TestParser):
                 ],
             },
         ]
-    def test_current_outages(self):
-        outages, time_range = current_outages()
-        print(current_content_parser(outages, time_range))
+
+
+class TestCurrentParser(TestCase):
+    def test_parser2(self):
+        self.maxDiff = None
+        res = []
+        class_name = self.__class__.__name__
+
+        time_range, content = get_current_outage_data(self.url)
+        base_time_ranges = current_str_to_datetime_ranges(time_range)
+        print(base_time_ranges)
+
+        parsed_content = content_parser(content, base_time_ranges)
+        print(f"{class_name} parsed_content: {parsed_content}")
+
+
+    @classmethod
+    def setUpClass(cls):
+        cls.url = "https://sevenergo.net/news/incident/otklyuchenie-elektroenergii-29-fevralya.html"
+        cls.valid = [
+            {
+                "address": "ул. Колобова",
+                "houses": ["21Б", "21В", "21Г"],
+                "times": [
+                    (
+                        datetime(2024, 2, 5, 8, 0),
+                        datetime(2024, 2, 5, 16, 0),
+                    )
+                ],
+            }
+        ]
+
+
+class estCurrentParser2(TestCurrentParser):
+    @classmethod
+    def setUpClass(cls):
+        cls.url = "https://sevenergo.net/news/kalendar-otklyuchenij-elektroenergii/696.html"
+        cls.valid = [
+            {
+                "address": "ул. Колобова",
+                "houses": ["21Б", "21В", "21Г"],
+                "times": [
+                    (
+                        datetime(2024, 2, 5, 8, 0),
+                        datetime(2024, 2, 5, 16, 0),
+                    )
+                ],
+            }
+        ]

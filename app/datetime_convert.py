@@ -127,22 +127,54 @@ def current_str_to_datetime_ranges(input_str):
 
     current_year = datetime.now().year
 
-    parts = input_str.split()
-    start_day = int(parts[-2])
-    start_month = months[parts[-1]]
-    start_date = datetime(current_year, start_month, start_day, 8, 0, 0)
-    end_date = datetime(current_year, start_month, start_day, 17, 0, 0)
 
-    if "по" in parts:
-        end_day = int(parts[parts.index("по") + 1])
-        # end_month = months[parts[parts.index("по") + 2]]
+    day_and_months = re.search(r'(\d+) (января|февраля|марта|апреля|мая|июня|июля|августа|сентрября|октября|ноября|декабря)',input_str)
+    day = int(day_and_months.group(1))
+    month_verb = day_and_months.group(2)
+    month_num = int(months.get(month_verb))
 
-    date_ranges = [(start_date, end_date)]
-    if "по" in parts:
-        days = end_day - start_day + 1
-        for i in range(1, days):
-            new_start = start_date + timedelta(days=i)
-            new_end = end_date + timedelta(days=i)
-            date_ranges.append((new_start, new_end))
+    ranges: List[Tuple[datetime, datetime]] = []
 
-    return date_ranges
+    is_valid = is_valid_date(day, month_num)
+    if is_valid:
+        print(f"Дата {day}.{month_num} валидна")
+
+        add_datetime_pair_to(ranges,
+                             f"{day}.{month_num}.{current_year} 08:00",
+                             f"{day}.{month_num}.{current_year} 17:00")
+
+        return ranges
+        # start_date = datetime(current_year, int(month_num), int(day), 8, 0, 0)
+        # end_date = datetime(current_year, int(month_num), int(day), 17, 0, 0)
+    else:
+        print(f"Дата {day}.{month_num} невалидна")
+        return []
+
+
+
+
+def is_valid_date(day, month):
+    # Проверка корректности номера месяца
+    if month < 1 or month > 12:
+        return False
+
+    # Месяцы с 30 днями
+    months_with_30_days = [4, 6, 9, 11]
+    if month in months_with_30_days:
+        return 1 <= day <= 30
+
+    # Месяцы с 31 днем
+    months_with_31_days = [1, 3, 5, 7, 8, 10, 12]
+    if month in months_with_31_days:
+        return 1 <= day <= 31
+
+    # Февраль
+    if month == 2:
+        # Проверка на високосный год
+        def is_leap_year(year):
+            return (year % 4 == 0 and year % 100 != 0) or year % 400 == 0
+
+        current_year = datetime.now().year
+        return 1 <= day <= 29 if is_leap_year(current_year) else 1 <= day <= 28
+
+    return False
