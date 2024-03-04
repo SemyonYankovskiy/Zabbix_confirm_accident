@@ -76,59 +76,54 @@ def content_parser(
     town = ""
     current_time_ranges = origin_times
 
-    for paragraph in content.findAll("p"):
+    for tag in content.find_all(True):
 
-        if not isinstance(paragraph, bs4.Tag):
-            continue
+        if tag.name == "p" or tag.name == "div":
 
-        if "strong" in str(paragraph) and paragraph.text.strip():
-            # Если в параграфе <p> имеется тег <strong>, значит необходимо выполнить отдельную проверку
-            strong_tag = paragraph.find("strong")
+            if "strong" in str(tag) and tag.text.strip():
+                # Если в теге имеется тег <strong>, значит необходимо выполнить отдельную проверку
+                strong_tag = tag.find("strong")
 
-            if not re.search(r"\d", paragraph.text):
-                # Если нет ни одной цифры в тексте параграфа, значит это название поселка (села).
-                match = re.search(r"[а-яА-Я. ]+", paragraph.text)
-                town = match.group(0) if match else ""
+                if not re.search(r"\d", tag.text):
+                    # Если нет ни одной цифры в тексте тега, значит это название поселка (села).
+                    match = re.search(r"[а-яА-Я. ]+", tag.text)
+                    town = match.group(0) if match else ""
+                    continue
+
+                if re.search(r"с\s+(\d\d:\d\d)\s+до\s+(\d\d:\d\d)", tag.text):
+                    # Если указан другой временной диапазон в формате: с 08:00 до 13:00,
+                    # то необходимо скорректировать начальные диапазоны.
+                    current_time_ranges = [
+                        update_datetime_pair(pair, tag.text.strip())
+                        for pair in origin_times
+                    ]
+                    continue
+
+                if (
+                    strong_tag
+                    and strong_tag.text.strip()
+                    and strong_tag.text != tag.text
+                ):
+                    # Если текст, который в теге <strong> не содержит весь текст тега,
+                    # то это означает, что в теге имеется как указание поселка, так и его улицы.
+                    # Необходимо рассматривать этот тег далее без префикса населенного пункта.
+                    town = ""
+
+            address, houses = divide_by_address_and_house_numbers(tag.text)
+            if not address:
                 continue
 
-            if re.search(r"с\s+(\d\d:\d\d)\s+до\s+(\d\d:\d\d)", paragraph.text):
-                # Если указан другой временной диапазон в формате: `с 08:00 до 13:00`,
-                # то необходимо скорректировать начальные диапазоны.
-                current_time_ranges = [
-                    update_datetime_pair(pair, paragraph.text.strip())
-                    for pair in origin_times
-                ]
-                continue
-
-            if (
-                strong_tag
-                and strong_tag.text.strip()
-                and strong_tag.text != paragraph.text
-            ):
-                # Если текст, который в теге <strong> не содержит весь текст параграфа <p>,
-                # то это означает, что в параграфе имеется как указание поселка, так и его улицы.
-                # Необходимо рассматривать этот параграф далее без префикса населенного пункта.
+            if "padding-left" in str(tag.get_attribute_list("style")):
+                # Если в стилях тега имеется отступ, то это означает,
+                # что данная запись относится к ранее указанному населенному пункту.
+                address = town + ", " + address
+            else:
                 town = ""
 
-        address, houses = divide_by_address_and_house_numbers(paragraph.text)
-        if not address:
-            continue
-
-        if "padding-left" in str(paragraph.get_attribute_list("style")):
-            # Если в стилях параграфа имеется отступ, то это означает,
-            # что данная запись относится к ранее указанному населенному пункту.
-            address = town + ", " + address
-        else:
-            town = ""
-
-        result.append((address, houses, current_time_ranges))
+            result.append((address, houses, current_time_ranges))
 
     return result
 
-
-# response = connect_and_get_resp("https://sevenergo.net/news/kalendar-otklyuchenij-elektroenergii/697.html")
-# outages = planned_parser(response)
-# print(outages)
 
 def current_outages():
     content = ''
@@ -172,5 +167,3 @@ def get_current_outage_data(url: str) -> Optional[Tuple[str, bs4.Tag]]:
 
     if isinstance(content, bs4.Tag) and isinstance(time_range, bs4.Tag):
         return time_range.text.strip(), content
-
-

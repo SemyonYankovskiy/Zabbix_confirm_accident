@@ -124,11 +124,11 @@ def current_str_to_datetime_ranges(input_str):
         "мая": 5, "июня": 6, "июля": 7, "августа": 8,
         "сентября": 9, "октября": 10, "ноября": 11, "декабря": 12
     }
+    ranges: List[Tuple[datetime, datetime]] = []
 
     current_year = datetime.now().year
 
-    day_and_months = re.search(r'(\d.+?) +(января|февраля|марта|апреля|мая|июня|июля|августа|сентрября|октября|ноября|декабря)',input_str)
-
+    day_and_months = re.search(r'(\d.*?) +(января|февраля|марта|апреля|мая|июня|июля|августа|сентрября|октября|ноября|декабря)',input_str)
     day = day_and_months.group(1)
     days = []
 
@@ -138,34 +138,36 @@ def current_str_to_datetime_ranges(input_str):
     range_days_symbol = re.match(r'^\d+\-\d+$', day)
 
     if simple_day:
-        print(f"Простая дата: {simple_day.group(0)}")
+        #print(f"Простая дата: {simple_day.group(0)}")
         days = extract_numbers_from_string(simple_day.group(0))
     elif few_days:
-        print(f"Несколько дат: {few_days.group(0)}")
+        #print(f"Несколько дат: {few_days.group(0)}")
         days = extract_numbers_from_string(few_days.group(0))
     elif range_days_verb:
-        print(f"Диапазон дат: {range_days_verb.group(0)}")
+        #print(f"Диапазон дат: {range_days_verb.group(0)}")
         days = extract_numbers_from_string(range_days_verb.group(0))
     elif range_days_symbol:
-        print(f"Диапазон дат через тире: {range_days_symbol.group(0)}")
+        #print(f"Диапазон дат через тире: {range_days_symbol.group(0)}")
         days = extract_numbers_from_string(range_days_symbol.group(0))
     else:
-        print(f"Некорректный формат: {day}")
+        return ranges
+        #print(f"Некорректный формат: {day}")
 
     month_verb = day_and_months.group(2)
     month_num = int(months.get(month_verb))
 
-    ranges: List[Tuple[datetime, datetime]] = []
+
 
     dates = []
     for day in days:
         is_valid = is_valid_date(day, month_num)
         if is_valid:
-            print(f"Дата {day}.{month_num} валидна")
+            #print(f"Дата {day}.{month_num} валидна")
             dates.append(f"{day}.{month_num}.{current_year}")
 
         else:
             print(f"Дата {day}.{month_num} невалидна")
+            return ranges
 
     if range_days_verb or range_days_symbol:
         dates = add_intermediate_dates(dates)
