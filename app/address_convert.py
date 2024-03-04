@@ -44,8 +44,7 @@ def house_splitter(houses: str) -> List[str]:
     ext_address = []
     for item in clean_address:
         if "-" in item:
-
-            start, stop = item.split("-")
+            start, stop = item.split("-", 1)
             if not start.isnumeric() or not stop.isnumeric():
                 ext_address.append(item)
                 continue

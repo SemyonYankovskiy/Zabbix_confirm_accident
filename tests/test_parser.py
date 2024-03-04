@@ -40,7 +40,7 @@ class TestParser(TestCase):
 
     @classmethod
     def setUpClass(cls) -> None:
-        cls.url = ("https://sevenergo.net/news/kalendar-otklyuchenij-elektroenergii/697.html")
+        cls.url = "https://sevenergo.net/news/kalendar-otklyuchenij-elektroenergii/697.html"
         cls.valid = [
             {
                 "address": "ул. Севастопольская зона ЮБК",
@@ -114,7 +114,7 @@ class TestParser(TestCase):
 class TestParser2(TestParser):
     @classmethod
     def setUpClass(cls):
-        cls.url = ("https://sevenergo.net/news/kalendar-otklyuchenij-elektroenergii/696.html")
+        cls.url = "https://sevenergo.net/news/kalendar-otklyuchenij-elektroenergii/696.html"
         cls.valid = [
             {
                 "address": "ул. Колобова",
@@ -132,7 +132,7 @@ class TestParser2(TestParser):
 class TestParser3(TestParser):
     @classmethod
     def setUpClass(cls):
-        cls.url = ("https://sevenergo.net/news/kalendar-otklyuchenij-elektroenergii/695.html")
+        cls.url = "https://sevenergo.net/news/kalendar-otklyuchenij-elektroenergii/695.html"
         cls.valid = [
             {
                 "address": "ул. Сапунгорская",
@@ -242,7 +242,7 @@ class TestParser3(TestParser):
 class TestParser4(TestParser):
     @classmethod
     def setUpClass(cls):
-        cls.url = ("https://sevenergo.net/news/kalendar-otklyuchenij-elektroenergii/680.html")
+        cls.url = "https://sevenergo.net/news/kalendar-otklyuchenij-elektroenergii/680.html"
         cls.valid = [
             {
                 "address": "пр. Генерала Острякова",
@@ -290,7 +290,7 @@ class TestParser4(TestParser):
 class TestParser5(TestParser):
     @classmethod
     def setUpClass(cls):
-        cls.url = ("https://sevenergo.net/news/kalendar-otklyuchenij-elektroenergii/689.html")
+        cls.url = "https://sevenergo.net/news/kalendar-otklyuchenij-elektroenergii/689.html"
         cls.valid = [
             {
                 "address": "пос. Октябрь, ул. 19-го Партсъезда",
@@ -539,7 +539,7 @@ class TestParser5(TestParser):
 class TestParser6(TestParser):
     @classmethod
     def setUpClass(cls):
-        cls.url = ("https://sevenergo.net/news/kalendar-otklyuchenij-elektroenergii/659.html")
+        cls.url = "https://sevenergo.net/news/kalendar-otklyuchenij-elektroenergii/659.html"
         cls.valid = [
             {
                 "address": "с. Орлиное, ул. Тюкова",
@@ -587,7 +587,7 @@ class TestParser6(TestParser):
 class TestParser7(TestParser):
     @classmethod
     def setUpClass(cls):
-        cls.url = ("https://sevenergo.net/news/kalendar-otklyuchenij-elektroenergii/706.html")
+        cls.url = "https://sevenergo.net/news/kalendar-otklyuchenij-elektroenergii/706.html"
         cls.valid = [
             {
                 "address": "Федюхины высоты (ООО Севастопольский военно-исторический клуб)",
@@ -1017,12 +1017,227 @@ class TestParser7(TestParser):
 
 
 class TestCurrentParser(TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.url = "https://sevenergo.net/news/incident/otklyuchenie-elektroenergii-4-marta-4.html"
+        cls.valid = [
+            {
+                "address": "Орлиное, пер. Байдарский ,",
+                "houses": ["4А", "2", "4", "6", "8", "10", "12", "14", "1", "3", "5", "9"],
+                "times": [(datetime(2024, 3, 4, 9, 0), datetime(2024, 3, 4, 17, 0))],
+            },
+            {
+                "address": "Орлиное, ул. Круговая ,",
+                "houses": ["6", "3А", "1", "3"],
+                "times": [(datetime(2024, 3, 4, 9, 0), datetime(2024, 3, 4, 17, 0))],
+            },
+            {
+                "address": "Орлиное, ул. Тюкова ,",
+                "houses": ["40", "55А", "49", "51", "55", "59"],
+                "times": [(datetime(2024, 3, 4, 9, 0), datetime(2024, 3, 4, 17, 0))],
+            },
+            {
+                "address": "Орлиное, ул. Ореховая ,",
+                "houses": ["9", "11"],
+                "times": [(datetime(2024, 3, 4, 9, 0), datetime(2024, 3, 4, 17, 0))],
+            },
+            {
+                "address": "Орлиное, ул. Ласпинская ,",
+                "houses": ["25А", "7"],
+                "times": [(datetime(2024, 3, 4, 9, 0), datetime(2024, 3, 4, 17, 0))],
+            },
+            {
+                "address": "Гончарное, ул. Подлесная ,",
+                "houses": ["2А", "2", "4", "6", "1А/1", "1А", "1Б", "1", "5"],
+                "times": [(datetime(2024, 3, 4, 9, 0), datetime(2024, 3, 4, 17, 0))],
+            },
+            {
+                "address": "Гончарное, ул. Резервная ,",
+                "houses": ["21/2", "21", "23"],
+                "times": [(datetime(2024, 3, 4, 9, 0), datetime(2024, 3, 4, 17, 0))],
+            },
+            {
+                "address": "Гончарное, ул. Механическая,",
+                "houses": ["18А", "8А", "6", "8", "10", "18", "13", "15", "21", "23", "25", "29"],
+                "times": [(datetime(2024, 3, 4, 9, 0), datetime(2024, 3, 4, 17, 0))],
+            },
+            {
+                "address": "Гончарное, ул. Шарикова,",
+                "houses": ["18", "22"],
+                "times": [(datetime(2024, 3, 4, 9, 0), datetime(2024, 3, 4, 17, 0))],
+            },
+            {
+                "address": "пер. Терракотовый,",
+                "houses": ["4А", "6А", "2", "4", "6", "1", "3", "5"],
+                "times": [(datetime(2024, 3, 4, 9, 0), datetime(2024, 3, 4, 17, 0))],
+            },
+            {
+                "address": "пер. Дачный,",
+                "houses": ["2А", "2"],
+                "times": [(datetime(2024, 3, 4, 9, 0), datetime(2024, 3, 4, 17, 0))],
+            },
+            {
+                "address": "ул. Бориса Шейнина,",
+                "houses": ["48", "83А", "85", "87", "89"],
+                "times": [(datetime(2024, 3, 4, 9, 0), datetime(2024, 3, 4, 17, 0))],
+            },
+            {
+                "address": "ул. В. Шевалева,",
+                "houses": ["44", "46", "48"],
+                "times": [(datetime(2024, 3, 4, 9, 0), datetime(2024, 3, 4, 17, 0))],
+            },
+            {
+                "address": "ул. Земляничная,",
+                "houses": ["2", "4", "6", "1", "3", "5", "7"],
+                "times": [(datetime(2024, 3, 4, 9, 0), datetime(2024, 3, 4, 17, 0))],
+            },
+            {
+                "address": "ул. Прохладная,",
+                "houses": ["1Б", "1", "3", "5"],
+                "times": [(datetime(2024, 3, 4, 9, 0), datetime(2024, 3, 4, 17, 0))],
+            },
+            {
+                "address": "ул. Наклонная,",
+                "houses": ["1", "3"],
+                "times": [(datetime(2024, 3, 4, 9, 0), datetime(2024, 3, 4, 17, 0))],
+            },
+            {
+                "address": "пос. Андреевка, ул. Огородная,",
+                "houses": ["14", "16", "18", "13", "15", "17", "19"],
+                "times": [(datetime(2024, 3, 4, 11, 0), datetime(2024, 3, 4, 17, 0))],
+            },
+            {
+                "address": "пос. Андреевка, ул. Садовая,",
+                "houses": [
+                    "2",
+                    "4",
+                    "6",
+                    "8",
+                    "10",
+                    "12",
+                    "14",
+                    "16",
+                    "18",
+                    "20",
+                    "22",
+                    "24",
+                    "26",
+                    "28",
+                    "30",
+                    "32",
+                    "9/2",
+                    "3",
+                    "5",
+                    "7",
+                    "9",
+                    "11",
+                    "13",
+                    "15",
+                    "17а",
+                    "19",
+                    "25",
+                    "27",
+                    "29",
+                    "31",
+                    "35",
+                    "37",
+                    "39",
+                    "41",
+                ],
+                "times": [(datetime(2024, 3, 4, 11, 0), datetime(2024, 3, 4, 17, 0))],
+            },
+            {
+                "address": "пос. Андреевка, ул. Центральная,",
+                "houses": [
+                    "4",
+                    "6",
+                    "8",
+                    "10",
+                    "12",
+                    "14",
+                    "16",
+                    "18",
+                    "20",
+                    "22",
+                    "1",
+                    "3",
+                    "5",
+                    "7",
+                    "9",
+                    "11",
+                    "13",
+                    "15",
+                    "17",
+                    "19",
+                    "21",
+                    "23",
+                    "25",
+                    "27",
+                    "29",
+                    "31",
+                    "33",
+                    "35",
+                    "37",
+                    "39",
+                    "41",
+                    "53",
+                ],
+                "times": [(datetime(2024, 3, 4, 11, 0), datetime(2024, 3, 4, 17, 0))],
+            },
+            {
+                "address": "пос. Андреевка, ул. Майская,",
+                "houses": [
+                    "2",
+                    "4",
+                    "6",
+                    "8",
+                    "10",
+                    "12",
+                    "14",
+                    "16",
+                    "18",
+                    "20",
+                    "22",
+                    "24",
+                    "26",
+                    "28",
+                    "30",
+                    "32",
+                    "34",
+                    "36",
+                    "1",
+                    "3",
+                    "5",
+                    "7",
+                    "9",
+                    "11",
+                    "13",
+                    "15",
+                    "17",
+                    "19",
+                    "21",
+                ],
+                "times": [(datetime(2024, 3, 4, 11, 0), datetime(2024, 3, 4, 17, 0))],
+            },
+            {
+                "address": "пос. Андреевка, пер. Садовый,",
+                "houses": ["4", "6", "16", "23"],
+                "times": [(datetime(2024, 3, 4, 11, 0), datetime(2024, 3, 4, 17, 0))],
+            },
+            {
+                "address": "пос. Андреевка, ул. 17 Ноября,",
+                "houses": ["9"],
+                "times": [(datetime(2024, 3, 4, 11, 0), datetime(2024, 3, 4, 17, 0))],
+            },
+        ]
+
     def test_parser2(self):
         self.maxDiff = None
         res = []
         class_name = self.__class__.__name__
 
         time_range, content = get_current_outage_data(self.url)
+        print("time_range", time_range)
         base_time_ranges = current_str_to_datetime_ranges(time_range)
         print(base_time_ranges)
         print(content)
@@ -1050,608 +1265,8 @@ class TestCurrentParser(TestCase):
 
         self.assertEqual(self.valid, res)
 
-    @classmethod
-    def setUpClass(cls):
-        cls.url = "https://sevenergo.net/news/incident/otklyuchenie-elektroenergii-29-fevralya.html"
-        cls.valid = [
-            {
-                "address": "ул. Героев Севастополя,",
-                "houses": ["37"],
-                "times": [
-                    (
-                        datetime(2024, 2, 29, 9, 0),
-                        datetime(2024, 2, 29, 11, 0),
-                    )
-                ],
-            },
-            {
-                "address": "ул. Папанина,",
-                "houses": ["7", "9", "11", "13"],
-                "times": [
-                    (
-                        datetime(2024, 2, 29, 9, 0),
-                        datetime(2024, 2, 29, 11, 0),
-                    )
-                ],
-            },
-            {
-                "address": "ул. Селенгинская,",
-                "houses": [
-                    "2",
-                    "4",
-                    "6",
-                    "8",
-                    "10",
-                    "12",
-                    "14",
-                    "13",
-                    "15",
-                    "17",
-                    "19",
-                    "21",
-                    "23",
-                    "25",
-                ],
-                "times": [
-                    (
-                        datetime(2024, 2, 29, 9, 0),
-                        datetime(2024, 2, 29, 11, 0),
-                    )
-                ],
-            },
-            {
-                "address": "ул. Генерала Родионова,",
-                "houses": ["10", "12", "14", "16", "18", "20", "22", "24"],
-                "times": [
-                    (
-                        datetime(2024, 2, 29, 9, 0),
-                        datetime(2024, 2, 29, 11, 0),
-                    )
-                ],
-            },
-            {
-                "address": "ул. Ромашковая,",
-                "houses": [
-                    "82А",
-                    "80А",
-                    "56",
-                    "58",
-                    "60",
-                    "66",
-                    "72",
-                    "74",
-                    "76",
-                    "80",
-                    "82",
-                    "41",
-                    "43",
-                    "49",
-                    "55",
-                    "776",
-                ],
-                "times": [
-                    (
-                        datetime(2024, 2, 29, 9, 0),
-                        datetime(2024, 2, 29, 11, 0),
-                    )
-                ],
-            },
-            {
-                "address": "ул. Муромская,",
-                "houses": ["182А", "188А"],
-                "times": [
-                    (
-                        datetime(2024, 2, 29, 9, 0),
-                        datetime(2024, 2, 29, 11, 0),
-                    )
-                ],
-            },
-            {
-                "address": "ПКИЗ Подводник,",
-                "houses": ["172/59", "271/158"],
-                "times": [
-                    (
-                        datetime(2024, 2, 29, 9, 0),
-                        datetime(2024, 2, 29, 11, 0),
-                    )
-                ],
-            },
-            {
-                "address": "ул. Горпищенко,",
-                "houses": ["109/33", "109/34"],
-                "times": [
-                    (
-                        datetime(2024, 2, 29, 9, 0),
-                        datetime(2024, 2, 29, 11, 0),
-                    )
-                ],
-            },
-            {
-                "address": "ул. Маслиновая,",
-                "houses": ["44а", "57", "171/58"],
-                "times": [
-                    (
-                        datetime(2024, 2, 29, 9, 0),
-                        datetime(2024, 2, 29, 11, 0),
-                    )
-                ],
-            },
-            {
-                "address": "пер. Крепостной,",
-                "houses": ["7"],
-                "times": [
-                    (
-                        datetime(2024, 2, 29, 9, 0),
-                        datetime(2024, 2, 29, 11, 0),
-                    )
-                ],
-            },
-            {
-                "address": "ул. Партизанская,",
-                "houses": ["16"],
-                "times": [
-                    (
-                        datetime(2024, 2, 29, 9, 0),
-                        datetime(2024, 2, 29, 11, 0),
-                    )
-                ],
-            },
-            {
-                "address": "ул. Частника,",
-                "houses": [
-                    "2",
-                    "4",
-                    "6",
-                    "12",
-                    "14",
-                    "16",
-                    "18",
-                    "20",
-                    "21А",
-                    "1",
-                    "3",
-                    "7",
-                    "9",
-                    "11",
-                    "13",
-                    "15",
-                    "17",
-                    "19",
-                    "21",
-                    "23",
-                    "25",
-                    "27",
-                ],
-                "times": [
-                    (
-                        datetime(2024, 2, 29, 9, 0),
-                        datetime(2024, 2, 29, 11, 0),
-                    )
-                ],
-            },
-            {
-                "address": "пер. 1 Морской,",
-                "houses": ["4", "6", "8", "3", "5"],
-                "times": [
-                    (
-                        datetime(2024, 2, 29, 9, 0),
-                        datetime(2024, 2, 29, 11, 0),
-                    )
-                ],
-            },
-            {
-                "address": "пер. 2 Морской,",
-                "houses": ["5", "7"],
-                "times": [
-                    (
-                        datetime(2024, 2, 29, 9, 0),
-                        datetime(2024, 2, 29, 11, 0),
-                    )
-                ],
-            },
-            {
-                "address": "пер. 4 Морской,",
-                "houses": ["3А", "1А", "1", "3"],
-                "times": [
-                    (
-                        datetime(2024, 2, 29, 9, 0),
-                        datetime(2024, 2, 29, 11, 0),
-                    )
-                ],
-            },
-            {
-                "address": "ул. Буряка,",
-                "houses": ["4", "6", "8", "10", "12", "1"],
-                "times": [
-                    (
-                        datetime(2024, 2, 29, 9, 0),
-                        datetime(2024, 2, 29, 11, 0),
-                    )
-                ],
-            },
-            {
-                "address": "ул. Гвардейская,",
-                "houses": ["4", "6", "5А", "1", "3", "5"],
-                "times": [
-                    (
-                        datetime(2024, 2, 29, 9, 0),
-                        datetime(2024, 2, 29, 11, 0),
-                    )
-                ],
-            },
-            {
-                "address": "ул. Димитрова,",
-                "houses": ["3", "2", "4"],
-                "times": [
-                    (
-                        datetime(2024, 2, 29, 9, 0),
-                        datetime(2024, 2, 29, 11, 0),
-                    )
-                ],
-            },
-            {
-                "address": "ул. Рыбацкая,",
-                "houses": ["10", "1"],
-                "times": [
-                    (
-                        datetime(2024, 2, 29, 9, 0),
-                        datetime(2024, 2, 29, 11, 0),
-                    )
-                ],
-            },
-            {
-                "address": "Старосеверная балка,",
-                "houses": ["2", "4", "6"],
-                "times": [
-                    (
-                        datetime(2024, 2, 29, 9, 0),
-                        datetime(2024, 2, 29, 11, 0),
-                    )
-                ],
-            },
-            {
-                "address": "спуск Степана Разина,",
-                "houses": ["4", "6", "8", "3"],
-                "times": [
-                    (
-                        datetime(2024, 2, 29, 9, 0),
-                        datetime(2024, 2, 29, 11, 0),
-                    )
-                ],
-            },
-            {
-                "address": "ул. Сторожевая,",
-                "houses": ["2", "4", "10"],
-                "times": [
-                    (
-                        datetime(2024, 2, 29, 9, 0),
-                        datetime(2024, 2, 29, 11, 0),
-                    )
-                ],
-            },
-            {
-                "address": "ул. Якорная,",
-                "houses": ["2", "4", "6", "12"],
-                "times": [
-                    (
-                        datetime(2024, 2, 29, 9, 0),
-                        datetime(2024, 2, 29, 11, 0),
-                    )
-                ],
-            },
-            {
-                "address": "пл. Захарова,",
-                "houses": ["1Б"],
-                "times": [
-                    (
-                        datetime(2024, 2, 29, 9, 0),
-                        datetime(2024, 2, 29, 11, 0),
-                    )
-                ],
-            },
-            {
-                "address": "ул. Бирюзовая,",
-                "houses": [
-                    "2",
-                    "4",
-                    "6",
-                    "8",
-                    "10",
-                    "12",
-                    "14",
-                    "16",
-                    "1",
-                    "3",
-                    "5",
-                    "7",
-                ],
-                "times": [
-                    (
-                        datetime(2024, 2, 29, 9, 0),
-                        datetime(2024, 2, 29, 11, 0),
-                    )
-                ],
-            },
-            {
-                "address": "ул. Изумрудная,",
-                "houses": [
-                    "2А",
-                    "2б",
-                    "2в",
-                    "2",
-                    "4",
-                    "6",
-                    "8",
-                    "10",
-                    "10",
-                    "13Б",
-                    "13А",
-                    "9Б",
-                    "9А",
-                    "7А",
-                    "1",
-                    "5",
-                    "7",
-                    "9",
-                    "11",
-                ],
-                "times": [
-                    (
-                        datetime(2024, 2, 29, 9, 0),
-                        datetime(2024, 2, 29, 11, 0),
-                    )
-                ],
-            },
-            {
-                "address": "ул. Маковая,",
-                "houses": ["4", "6"],
-                "times": [
-                    (
-                        datetime(2024, 2, 29, 9, 0),
-                        datetime(2024, 2, 29, 11, 0),
-                    )
-                ],
-            },
-            {
-                "address": "ул. Морпортовская,",
-                "houses": [
-                    "4",
-                    "6",
-                    "8",
-                    "10",
-                    "12",
-                    "14",
-                    "16",
-                    "18",
-                    "20",
-                    "15",
-                    "17",
-                    "19",
-                    "21",
-                    "23",
-                    "25",
-                    "27",
-                ],
-                "times": [
-                    (
-                        datetime(2024, 2, 29, 9, 0),
-                        datetime(2024, 2, 29, 11, 0),
-                    )
-                ],
-            },
-            {
-                "address": "ул. Полынная,",
-                "houses": ["3А", "3"],
-                "times": [
-                    (
-                        datetime(2024, 2, 29, 9, 0),
-                        datetime(2024, 2, 29, 11, 0),
-                    )
-                ],
-            },
-            {
-                "address": "ул. Штурвальная,",
-                "houses": ["4", "6", "8", "10", "12", "7", "9", "11", "13"],
-                "times": [
-                    (
-                        datetime(2024, 2, 29, 9, 0),
-                        datetime(2024, 2, 29, 11, 0),
-                    )
-                ],
-            },
-            {
-                "address": "Б. Античный,",
-                "houses": [
-                    "2",
-                    "4",
-                    "6",
-                    "8",
-                    "10",
-                    "12",
-                    "14",
-                    "16",
-                    "18",
-                    "20",
-                    "22",
-                    "24",
-                    "14А",
-                ],
-                "times": [
-                    (
-                        datetime(2024, 2, 29, 9, 0),
-                        datetime(2024, 2, 29, 11, 0),
-                    )
-                ],
-            },
-            {
-                "address": "ул. Адмирала Грейга,",
-                "houses": [
-                    "6",
-                    "8",
-                    "3",
-                    "14",
-                    "19А",
-                    "17Б",
-                    "17Б/1",
-                    "19",
-                    "23",
-                    "10",
-                    "5/4",
-                    "9/8",
-                    "5",
-                ],
-                "times": [
-                    (
-                        datetime(2024, 2, 29, 9, 0),
-                        datetime(2024, 2, 29, 11, 0),
-                    )
-                ],
-            },
-            {
-                "address": "СНТ Волга,",
-                "houses": ["28", "уч50", "уч51", "уч95", "уч99"],
-                "times": [
-                    (
-                        datetime(2024, 2, 29, 9, 0),
-                        datetime(2024, 2, 29, 11, 0),
-                    )
-                ],
-            },
-            {
-                "address": "ул. Авиационная,",
-                "houses": [
-                    "2",
-                    "4",
-                    "6",
-                    "8",
-                    "10",
-                    "12",
-                    "14",
-                    "16",
-                    "18",
-                    "20",
-                    "9",
-                    "11",
-                    "13",
-                ],
-                "times": [
-                    (
-                        datetime(2024, 2, 29, 9, 0),
-                        datetime(2024, 2, 29, 11, 0),
-                    )
-                ],
-            },
-            {
-                "address": "ул. Ольховая,",
-                "houses": ["4", "6"],
-                "times": [
-                    (
-                        datetime(2024, 2, 29, 9, 0),
-                        datetime(2024, 2, 29, 11, 0),
-                    )
-                ],
-            },
-            {
-                "address": "ул. Арцеулова,",
-                "houses": ["14"],
-                "times": [
-                    (
-                        datetime(2024, 2, 29, 9, 0),
-                        datetime(2024, 2, 29, 11, 0),
-                    )
-                ],
-            },
-            {
-                "address": "СТ Ромашка,",
-                "houses": ["32"],
-                "times": [
-                    (
-                        datetime(2024, 2, 29, 9, 0),
-                        datetime(2024, 2, 29, 11, 0),
-                    )
-                ],
-            },
-            {
-                "address": "ул. Готская,",
-                "houses": [
-                    "126Б",
-                    "118А",
-                    "120А",
-                    "122А",
-                    "124А",
-                    "110",
-                    "112",
-                    "114",
-                    "116",
-                    "118",
-                    "126",
-                    "128",
-                    "26А/15",
-                    "26А/7",
-                    "26А/1",
-                    "26А/2",
-                    "26А/4",
-                    "26А/5",
-                    "26А/8",
-                ],
-                "times": [
-                    (
-                        datetime(2024, 2, 29, 9, 0),
-                        datetime(2024, 2, 29, 11, 0),
-                    )
-                ],
-            },
-            {
-                "address": "ул. Фиолентовское шоссе,",
-                "houses": [
-                    "11",
-                    "28",
-                    "11А",
-                    "18Б",
-                    "18",
-                    "28/1",
-                    "42А/1",
-                    "42А",
-                    "18А",
-                    "48А",
-                    "42",
-                    "9В/2",
-                    "11Б",
-                    "7",
-                    "9Г/1",
-                    "9А",
-                ],
-                "times": [
-                    (
-                        datetime(2024, 2, 29, 9, 0),
-                        datetime(2024, 2, 29, 11, 0),
-                    )
-                ],
-            },
-            {
-                "address": "Пятницкий проезд,",
-                "houses": ["57"],
-                "times": [
-                    (
-                        datetime(2024, 2, 29, 9, 0),
-                        datetime(2024, 2, 29, 11, 0),
-                    )
-                ],
-            },
-            {
-                "address": "ул. Адмирала Фадеева,",
-                "houses": ["1"],
-                "times": [
-                    (
-                        datetime(2024, 2, 29, 9, 0),
-                        datetime(2024, 2, 29, 11, 0),
-                    )
-                ],
-            },
-        ]
 
-#
-class CurrentParser2(TestCurrentParser):
+class TestCurrentParser2(TestCurrentParser):
     @classmethod
     def setUpClass(cls):
         cls.url = "https://sevenergo.net/news/incident/otklyuchenie-elektroenergii-1-marta-2.html"
@@ -2323,22 +1938,8 @@ class CurrentParser2(TestCurrentParser):
         ]
 
 
-class CurrentParser3(TestCurrentParser):
-    @classmethod
-    def setUpClass(cls):
-        cls.url = "https://sevenergo.net/news/incident/otklyuchenie-elektroenergii-4-i-5-marta.html"
-        cls.valid = []
-
-
-class CurrentParser4(TestCurrentParser):
+class TestCurrentParser3(TestCurrentParser):
     @classmethod
     def setUpClass(cls):
         cls.url = "https://sevenergo.net/news/incident/otklyuchenie-elektroenergii-2-i-3-marta.html"
-        cls.valid = []
-
-
-class CurrentParser5(TestCurrentParser):
-    @classmethod
-    def setUpClass(cls):
-        cls.url = "https://sevenergo.net/news/incident/otklyuchenie-elektroenergii-4-marta-4.html"
         cls.valid = []

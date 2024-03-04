@@ -8,7 +8,7 @@ import requests
 from bs4 import BeautifulSoup
 
 from app.address_convert import divide_by_address_and_house_numbers
-from app.datetime_convert import update_datetime_pair
+from app.datetime_convert import update_datetime_pair, find_dates_in_text
 from app.request import request_get
 
 
@@ -29,11 +29,7 @@ def get_planned_outages_urls(site: str = "https://sevenergo.net") -> List[str]:
 
     links = soup.findAll("a", class_="dp-module-upcoming-modal-disabled")
 
-    return [
-        f'https://sevenergo.net{link.attrs["href"]}'
-        for link in links
-        if link.attrs.get("href")
-    ]
+    return [f'https://sevenergo.net{link.attrs["href"]}' for link in links if link.attrs.get("href")]
 
 
 def get_planned_outage_data(url: str) -> Optional[Tuple[str, bs4.Tag]]:
@@ -58,6 +54,33 @@ def get_planned_outage_data(url: str) -> Optional[Tuple[str, bs4.Tag]]:
     return None
 
 
+def total_update_datetime_pairs(
+    text: str, current_time_ranges: List[Tuple[datetime, datetime]]
+) -> Tuple[List[Tuple[datetime, datetime]], bool]:
+    """
+    Находит диапазоны дат отключения и обновляет переданный список пар дат отключения согласно корректировке в тексте.
+    :return: Список диапазонов дат отключения и признак обновления, если были обновлены диапазоны.
+    """
+    valid_time_ranges = []
+    updated = False
+    # Если в тексте есть даты, то нужно уточнить диапазон отключения.
+    new_dates_match = find_dates_in_text(text)
+    if new_dates_match:
+        updated = True
+        for time_range_pair in current_time_ranges:
+            if time_range_pair[0].date() in new_dates_match:
+                valid_time_ranges.append(time_range_pair)
+    else:
+        valid_time_ranges = current_time_ranges
+
+    if re.search(r"с\s+(\d\d:\d\d)\s+до\s+(\d\d:\d\d)", text):
+        updated = True
+        # Если указан другой временной диапазон в формате: с 08:00 до 13:00
+        valid_time_ranges = [update_datetime_pair(pair, text) for pair in valid_time_ranges]
+
+    return valid_time_ranges, updated
+
+
 def content_parser(
     content: bs4.Tag, origin_times: List[Tuple[datetime, datetime]]
 ) -> List[Tuple[str, str, List[Tuple[datetime, datetime]]]]:
@@ -74,78 +97,111 @@ def content_parser(
 
     result = []
     town = ""
+    town_children_under_padding = True
     current_time_ranges = origin_times
+
+    print("origin_times", origin_times)
 
     for tag in content.find_all(True):
 
-        if tag.name == "p" or tag.name == "div":
+        if tag.name not in ("p", "div"):
+            continue
 
-            if "strong" in str(tag) and tag.text.strip():
-                # Если в теге имеется тег <strong>, значит необходимо выполнить отдельную проверку
-                strong_tag = tag.find("strong")
+        tag_text = tag.text.strip() if tag.text else ""
 
-                if not re.search(r"\d", tag.text):
-                    # Если нет ни одной цифры в тексте тега, значит это название поселка (села).
-                    match = re.search(r"[а-яА-Я. ]+", tag.text)
-                    town = match.group(0) if match else ""
-                    continue
+        current_time_ranges, updated = total_update_datetime_pairs(tag_text, current_time_ranges)
+        # Пропускаем, если обновлены диапазоны (в таком случае содержимое не содержит адреса).
+        if updated:
+            continue
 
-                if re.search(r"с\s+(\d\d:\d\d)\s+до\s+(\d\d:\d\d)", tag.text):
-                    # Если указан другой временной диапазон в формате: с 08:00 до 13:00,
-                    # то необходимо скорректировать начальные диапазоны.
-                    current_time_ranges = [
-                        update_datetime_pair(pair, tag.text.strip())
-                        for pair in origin_times
-                    ]
-                    continue
+        # Если в теге имеется тег <strong>, значит необходимо выполнить отдельную проверку
+        if "strong" in str(tag) and tag_text:
+            strong_tag = tag.find("strong")
 
-                if (
-                    strong_tag
-                    and strong_tag.text.strip()
-                    and strong_tag.text != tag.text
-                ):
-                    # Если текст, который в теге <strong> не содержит весь текст тега,
-                    # то это означает, что в теге имеется как указание поселка, так и его улицы.
-                    # Необходимо рассматривать этот тег далее без префикса населенного пункта.
-                    town = ""
-
-            address, houses = divide_by_address_and_house_numbers(tag.text)
-            if not address:
+            if not re.search(r"\d", tag_text):
+                # Если нет ни одной цифры в тексте тега, значит это название поселка (села).
+                match = re.search(r"[а-яА-Я. ]+", tag_text)
+                town = match.group(0) if match else ""
                 continue
 
-            if "padding-left" in str(tag.get_attribute_list("style")):
-                # Если в стилях тега имеется отступ, то это означает,
-                # что данная запись относится к ранее указанному населенному пункту.
-                address = town + ", " + address
-            else:
+            if strong_tag and strong_tag.text.strip() and strong_tag.text != tag_text:
+                # Если текст, который в теге <strong> не содержит весь текст тега,
+                # то это означает, что в теге имеется как указание поселка, так и его улицы.
+                # Необходимо рассматривать этот тег далее без префикса населенного пункта.
                 town = ""
 
-            result.append((address, houses, current_time_ranges))
+        elif tag_text:
+            # Если указано село или поселок не в strong
+            town_math = re.match(r"(с\.|пос\.|г\.)\s*([а-яА-Я]+)[:;]?$", tag_text)
+            if town_math:
+                town = town_math.group(2)
+                continue
+
+        address, houses = divide_by_address_and_house_numbers(tag.text)
+
+        if "padding-left" in str(tag.get_attribute_list("style")):
+            # Если в стилях тега имеется отступ, то это означает,
+            # что данная запись относится к ранее указанному населенному пункту.
+            town_children_under_padding = True
+
+        elif town and town_children_under_padding:
+            # Если имеется ранее указанный населенный пункт и требуется искать улицу в отступе, но его нет,
+            # значит будем учитывать, что последующие записи населенного пункта будут до следующей пустой строчки.
+            town_children_under_padding = False
+
+        if town and not town_children_under_padding:
+            # Если нет отступа, то будем учитывать,
+            # что последующие записи населенного пункта будут до следующей пустой строчки.
+            if not address:
+                town = ""
+
+        # Пропускаем пустой адрес
+        if not address:
+            continue
+
+        # Добавляем населенный пункт, если он есть.
+        if town:
+            address = town + ", " + address
+
+        result.append((address, houses, current_time_ranges))
 
     return result
 
 
 def current_outages():
-    content = ''
-    header = ''
-    months = ['января', 'февраля', 'марта', 'апреля', 'мая', 'июня', 'июля', 'август', 'сентября', 'октября', 'ноября', 'декабря']
-    resp = requests.get('https://sevenergo.net/news/incident.html', timeout=10)
+    content = ""
+    header = ""
+    months = [
+        "января",
+        "февраля",
+        "марта",
+        "апреля",
+        "мая",
+        "июня",
+        "июля",
+        "август",
+        "сентября",
+        "октября",
+        "ноября",
+        "декабря",
+    ]
+    resp = requests.get("https://sevenergo.net/news/incident.html", timeout=10)
     if resp.status_code == 200:
         today = date.today()
 
-        soup = BeautifulSoup(resp.text, 'lxml')
-        links = soup.findAll('a', string=re.compile(rf'[0]*{today.day} {months[today.month - 1]}'))
+        soup = BeautifulSoup(resp.text, "lxml")
+        links = soup.findAll("a", string=re.compile(rf"[0]*{today.day} {months[today.month - 1]}"))
 
         for l in links:
-            resp = requests.get('https://sevenergo.net' + l.attrs['href'], timeout=10)
+            resp = requests.get("https://sevenergo.net" + l.attrs["href"], timeout=10)
             if resp.status_code == 200:
-                soup = BeautifulSoup(resp.text, 'lxml')
-                header = soup.find('div', {'class': 'article-header'})
-                content = soup.find('div', {'itemprop': 'articleBody'})
+                soup = BeautifulSoup(resp.text, "lxml")
+                header = soup.find("div", {"class": "article-header"})
+                content = soup.find("div", {"itemprop": "articleBody"})
 
                 # print(header.text.strip())
                 # print(content.text.strip())
-                #outages += str(header) + '<br>' + str(content) + '<br><hr>'
+                # outages += str(header) + '<br>' + str(content) + '<br><hr>'
     return content, header
 
 

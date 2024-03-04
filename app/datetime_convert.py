@@ -1,6 +1,22 @@
 import re
-from datetime import datetime, timedelta
+from datetime import datetime, date
 from typing import List, Tuple
+
+
+MONTH_VERBS = {
+    "января": 1,
+    "февраля": 2,
+    "марта": 3,
+    "апреля": 4,
+    "мая": 5,
+    "июня": 6,
+    "июля": 7,
+    "августа": 8,
+    "сентября": 9,
+    "октября": 10,
+    "ноября": 11,
+    "декабря": 12,
+}
 
 
 def str_to_datetime_ranges(text: str) -> List[Tuple[datetime, datetime]]:
@@ -86,7 +102,7 @@ def update_datetime_pair(pair: Tuple[datetime, datetime], time_correction: str) 
     :return: Пара новых дат.
     """
 
-    match = re.search(r"с\s+(\d\d:\d\d)\s+до\s+(\d\d:\d\d)", time_correction)
+    match = re.search(r"с\s+(\d\d:\d\d)\s+до\s+(\d\d:\d\d)", time_correction, re.IGNORECASE)
     if not match:
         return pair
 
@@ -119,50 +135,46 @@ def update_datetime_pair(pair: Tuple[datetime, datetime], time_correction: str) 
 
 
 def current_str_to_datetime_ranges(input_str):
-    months = {
-        "января": 1, "февраля": 2, "марта": 3, "апреля": 4,
-        "мая": 5, "июня": 6, "июля": 7, "августа": 8,
-        "сентября": 9, "октября": 10, "ноября": 11, "декабря": 12
-    }
     ranges: List[Tuple[datetime, datetime]] = []
 
     current_year = datetime.now().year
 
-    day_and_months = re.search(r'(\d.*?) +(января|февраля|марта|апреля|мая|июня|июля|августа|сентрября|октября|ноября|декабря)',input_str)
+    day_and_months = re.search(
+        r"(\d.*?) +(января|февраля|марта|апреля|мая|июня|июля|августа|сентрября|октября|ноября|декабря)",
+        input_str,
+    )
     day = day_and_months.group(1)
     days = []
 
-    simple_day = re.match(r'^\d+$', day)
-    few_days = re.match(r'^\d+(,\d+)+(\sи\s\d+)?$', day)
-    range_days_verb = re.match(r'^\d+\sпо\s\d+$', day)
-    range_days_symbol = re.match(r'^\d+\-\d+$', day)
+    simple_day = re.match(r"^\d+$", day)
+    few_days = re.match(r"^\d+(,\d+)+(\sи\s\d+)?$", day)
+    range_days_verb = re.match(r"^(\d+)\sи\s(\d+)?$", day)
+    range_days_symbol = re.match(r"^\d+\-\d+$", day)
 
     if simple_day:
-        #print(f"Простая дата: {simple_day.group(0)}")
+        # print(f"Простая дата: {simple_day.group(0)}")
         days = extract_numbers_from_string(simple_day.group(0))
     elif few_days:
-        #print(f"Несколько дат: {few_days.group(0)}")
+        # print(f"Несколько дат: {few_days.group(0)}")
         days = extract_numbers_from_string(few_days.group(0))
     elif range_days_verb:
-        #print(f"Диапазон дат: {range_days_verb.group(0)}")
+        # print(f"Диапазон дат: {range_days_verb.group(0)}")
         days = extract_numbers_from_string(range_days_verb.group(0))
     elif range_days_symbol:
-        #print(f"Диапазон дат через тире: {range_days_symbol.group(0)}")
+        # print(f"Диапазон дат через тире: {range_days_symbol.group(0)}")
         days = extract_numbers_from_string(range_days_symbol.group(0))
     else:
         return ranges
-        #print(f"Некорректный формат: {day}")
+        # print(f"Некорректный формат: {day}")
 
     month_verb = day_and_months.group(2)
-    month_num = int(months.get(month_verb))
-
-
+    month_num = int(MONTH_VERBS.get(month_verb))
 
     dates = []
     for day in days:
         is_valid = is_valid_date(day, month_num)
         if is_valid:
-            #print(f"Дата {day}.{month_num} валидна")
+            # print(f"Дата {day}.{month_num} валидна")
             dates.append(f"{day}.{month_num}.{current_year}")
 
         else:
@@ -212,7 +224,82 @@ def extract_numbers_from_string(input_string):
     :param input_string: Входная строка, содержащая числа.
     :return: Список чисел.
     """
-    import re
+
     # Используем регулярное выражение для поиска чисел в строке
-    numbers = re.findall(r'\d+', input_string)
+    numbers = re.findall(r"\d+", input_string)
     return [int(num) for num in numbers]
+
+
+def get_days_list(days: str) -> List[int]:
+    """
+    Извлекает числа из строки с датами и возвращает их в виде списка.
+
+    >>> get_days_list("1,2,3,4,5") # 1,2,3,4,5
+    [1, 2, 3, 4, 5]
+    >>> get_days_list("1 по 2") # 1, 2
+    [1, 2]
+
+    :param days: Строка с датами.
+    :return: Список чисел.
+    """
+    if "по" in days:
+        days_range = days.split("по")
+        if len(days_range) == 2:
+            start_date = days_range[0].strip()
+            end_date = days_range[1].strip()
+            if start_date.isdigit() and end_date.isdigit():
+                return [i for i in range(int(start_date), int(end_date) + 1)]
+            else:
+                return []  # Если даты не валидны, то возвращаем пустой список
+        else:
+            return []  # Если не получилось преобразовать дату, то возвращаем пустой список.
+
+    if re.search(r"[и,]", days):
+        days_range = re.split(r"\s*[и,]\s*", days)
+        valid_days = []
+        for day in days_range:
+            if day.isdigit():
+                valid_days.append(int(day))  # Если дата валидна, то добавляем ее в список
+        return valid_days
+
+    if days.isdigit():
+        return [int(days)]
+
+    return []
+
+
+def find_dates_in_text(text: str) -> List[date]:
+    """
+    Ищет даты в тексте и возвращает список дат.
+    :param text: Текст, в котором искать даты.
+    """
+    result: List[date] = []
+
+    for line in text.split("\n"):
+        match = re.search(
+            r"(?<!обновлено )\b(?:((?:\d+ ?[пдо,и]+ ?)*\d+)\s+?"
+            r"(января|февраля|марта|апреля|мая|июня|июля|августа|сентрября|октября|ноября|декабря)|"
+            r"(\d\d\.\d\d\.\d\d\d\d))",
+            line,
+        )
+
+        if match:
+            days = match.group(1)
+            month_verb = match.group(2)
+            complex_date = match.group(3)
+            if complex_date:
+                # Если найдена дата, то добавляем ее в список
+                result.append(datetime.strptime(complex_date, "%d.%m.%Y").date())
+
+            elif days and month_verb:
+                # Если найдены дни и месяц, то добавляем все возможные даты в список
+                days_list = get_days_list(days)
+                month_num = MONTH_VERBS.get(month_verb)
+                current_year = datetime.now().year
+                for day in days_list:
+                    try:
+                        result.append(date(current_year, month_num, int(day)))
+                    except ValueError:
+                        pass
+
+        return result

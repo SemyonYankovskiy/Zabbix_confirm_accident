@@ -6,3 +6,4 @@ geopy
 pyzabbix
 pika
 orjson
+schedule
