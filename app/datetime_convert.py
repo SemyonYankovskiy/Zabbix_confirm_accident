@@ -130,17 +130,25 @@ def current_str_to_datetime_ranges(input_str):
     day_and_months = re.search(r'(\d.+?) +(января|февраля|марта|апреля|мая|июня|июля|августа|сентрября|октября|ноября|декабря)',input_str)
 
     day = day_and_months.group(1)
-    print(day)
-    if re.match(r'^\d+$', day):
-        print(f"Простая дата: {day}")
-        day = int(day)
-    elif re.match(r'^\d+(,\d+)+(\sи\s\d+)?$', day):
-        print(f"Несколько дат: {day}")
-    elif re.match(r'^\d+\sпо\s\d+$', day):
-        print(f"Диапазон дат: {day}")
+    days = []
 
-    elif re.match(r'^\d+\-\d+$', day):
-        print(f"Диапазон дат через тире: {day}")
+    simple_day = re.match(r'^\d+$', day)
+    few_days = re.match(r'^\d+(,\d+)+(\sи\s\d+)?$', day)
+    range_days_verb = re.match(r'^\d+\sпо\s\d+$', day)
+    range_days_symbol = re.match(r'^\d+\-\d+$', day)
+
+    if simple_day:
+        print(f"Простая дата: {simple_day.group(0)}")
+        days = extract_numbers_from_string(simple_day.group(0))
+    elif few_days:
+        print(f"Несколько дат: {few_days.group(0)}")
+        days = extract_numbers_from_string(few_days.group(0))
+    elif range_days_verb:
+        print(f"Диапазон дат: {range_days_verb.group(0)}")
+        days = extract_numbers_from_string(range_days_verb.group(0))
+    elif range_days_symbol:
+        print(f"Диапазон дат через тире: {range_days_symbol.group(0)}")
+        days = extract_numbers_from_string(range_days_symbol.group(0))
     else:
         print(f"Некорректный формат: {day}")
 
@@ -149,22 +157,24 @@ def current_str_to_datetime_ranges(input_str):
 
     ranges: List[Tuple[datetime, datetime]] = []
 
-    is_valid = is_valid_date(day, month_num)
-    if is_valid:
-        print(f"Дата {day}.{month_num} валидна")
+    dates = []
+    for day in days:
+        is_valid = is_valid_date(day, month_num)
+        if is_valid:
+            print(f"Дата {day}.{month_num} валидна")
+            dates.append(f"{day}.{month_num}.{current_year}")
 
-        add_datetime_pair_to(ranges,
-                             f"{day}.{month_num}.{current_year} 08:00",
-                             f"{day}.{month_num}.{current_year} 17:00")
+        else:
+            print(f"Дата {day}.{month_num} невалидна")
 
-        return ranges
-        # start_date = datetime(current_year, int(month_num), int(day), 8, 0, 0)
-        # end_date = datetime(current_year, int(month_num), int(day), 17, 0, 0)
-    else:
-        print(f"Дата {day}.{month_num} невалидна")
-        return []
+    if range_days_verb or range_days_symbol:
+        dates = add_intermediate_dates(dates)
 
+    for item_date in dates:
+        add_datetime_pair_to(ranges, f"{item_date} 08:00", f"{item_date} 17:00")
 
+    print(ranges)
+    return ranges
 
 
 def is_valid_date(day, month):
@@ -192,3 +202,15 @@ def is_valid_date(day, month):
         return 1 <= day <= 29 if is_leap_year(current_year) else 1 <= day <= 28
 
     return False
+
+
+def extract_numbers_from_string(input_string):
+    """
+    Извлекает все числа из строки и возвращает их в виде списка.
+    :param input_string: Входная строка, содержащая числа.
+    :return: Список чисел.
+    """
+    import re
+    # Используем регулярное выражение для поиска чисел в строке
+    numbers = re.findall(r'\d+', input_string)
+    return [int(num) for num in numbers]

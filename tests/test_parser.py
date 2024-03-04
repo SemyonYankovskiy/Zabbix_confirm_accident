@@ -1050,7 +1050,7 @@ class TestCurrentParser(TestCase):
 class estCurrentParser2(TestCurrentParser):
     @classmethod
     def setUpClass(cls):
-        cls.url = "https://sevenergo.net/news/kalendar-otklyuchenij-elektroenergii/696.html"
+        cls.url = "https://url.html"
         cls.valid = [
             {
                 "address": "ул. Колобова",

@@ -121,7 +121,9 @@ def content_parser(
         else:
             town = ""
 
-    return None
+        result.append((address, houses, current_time_ranges))
+
+    return result
 
 
 # response = connect_and_get_resp("https://sevenergo.net/news/kalendar-otklyuchenij-elektroenergii/697.html")
@@ -152,7 +154,6 @@ def current_outages():
     return content, header
 
 
-
 def get_current_outage_data(url: str) -> Optional[Tuple[str, bs4.Tag]]:
     """
     Возвращает время и содержимое планового отключения.
@@ -172,6 +173,4 @@ def get_current_outage_data(url: str) -> Optional[Tuple[str, bs4.Tag]]:
     if isinstance(content, bs4.Tag) and isinstance(time_range, bs4.Tag):
         return time_range.text.strip(), content
 
-        result.append((address, houses, current_time_ranges))
 
-    return result
