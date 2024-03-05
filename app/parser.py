@@ -29,7 +29,7 @@ def get_planned_outages_urls(site: str = "https://sevenergo.net") -> List[str]:
 
     links = soup.findAll("a", class_="dp-module-upcoming-modal-disabled")
 
-    return [f'https://sevenergo.net{link.attrs["href"]}' for link in links if link.attrs.get("href")]
+    return [f'{site}{link.attrs["href"]}' for link in links if link.attrs.get("href")]
 
 
 def get_planned_outage_data(url: str) -> Optional[Tuple[str, bs4.Tag]]:
@@ -54,33 +54,6 @@ def get_planned_outage_data(url: str) -> Optional[Tuple[str, bs4.Tag]]:
     return None
 
 
-def total_update_datetime_pairs(
-    text: str, current_time_ranges: List[Tuple[datetime, datetime]]
-) -> Tuple[List[Tuple[datetime, datetime]], bool]:
-    """
-    Находит диапазоны дат отключения и обновляет переданный список пар дат отключения согласно корректировке в тексте.
-    :return: Список диапазонов дат отключения и признак обновления, если были обновлены диапазоны.
-    """
-    valid_time_ranges = []
-    updated = False
-    # Если в тексте есть даты, то нужно уточнить диапазон отключения.
-    new_dates_match = find_dates_in_text(text)
-    if new_dates_match:
-        updated = True
-        for time_range_pair in current_time_ranges:
-            if time_range_pair[0].date() in new_dates_match:
-                valid_time_ranges.append(time_range_pair)
-    else:
-        valid_time_ranges = current_time_ranges
-
-    if re.search(r"с\s+(\d\d:\d\d)\s+до\s+(\d\d:\d\d)", text):
-        updated = True
-        # Если указан другой временной диапазон в формате: с 08:00 до 13:00
-        valid_time_ranges = [update_datetime_pair(pair, text) for pair in valid_time_ranges]
-
-    return valid_time_ranges, updated
-
-
 def content_parser(
     content: bs4.Tag, origin_times: List[Tuple[datetime, datetime]]
 ) -> List[Tuple[str, str, List[Tuple[datetime, datetime]]]]:
@@ -100,18 +73,31 @@ def content_parser(
     town_children_under_padding = True
     current_time_ranges = origin_times
 
-    print("origin_times", origin_times)
-
     for tag in content.find_all(True):
-
+        datetime_modified = False
         if tag.name not in ("p", "div"):
             continue
 
         tag_text = tag.text.strip() if tag.text else ""
 
-        current_time_ranges, updated = total_update_datetime_pairs(tag_text, current_time_ranges)
-        # Пропускаем, если обновлены диапазоны (в таком случае содержимое не содержит адреса).
-        if updated:
+        # Если нужно уточнить даты отключения.
+        new_dates_match = find_dates_in_text(tag_text)
+        if new_dates_match:
+            datetime_modified = True
+            valid_time_ranges = []
+            # Проходим по всем начальным диапазонам отключения.
+            for time_range_pair in origin_times:
+                if time_range_pair[0].date() in new_dates_match:
+                    valid_time_ranges.append(time_range_pair)
+            current_time_ranges = valid_time_ranges
+
+        # Если указан другой временной диапазон в формате: с 08:00 до 13:00
+        if re.search(r"с\s+(\d\d:\d\d)\s+до\s+(\d\d:\d\d)", tag_text):
+            datetime_modified = True
+            current_time_ranges = [update_datetime_pair(pair, tag_text) for pair in current_time_ranges]
+
+        # Если было уточнение временного диапазона отключения, то пропускаем текущий блок.
+        if datetime_modified:
             continue
 
         # Если в теге имеется тег <strong>, значит необходимо выполнить отдельную проверку

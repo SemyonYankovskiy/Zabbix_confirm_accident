@@ -276,17 +276,21 @@ def find_dates_in_text(text: str) -> List[date]:
     result: List[date] = []
 
     for line in text.split("\n"):
-        match = re.search(
+        match = re.findall(
             r"(?<!обновлено )\b(?:((?:\d+ ?[пдо,и]+ ?)*\d+)\s+?"
             r"(января|февраля|марта|апреля|мая|июня|июля|августа|сентрября|октября|ноября|декабря)|"
             r"(\d\d\.\d\d\.\d\d\d\d))",
             line,
         )
 
-        if match:
-            days = match.group(1)
-            month_verb = match.group(2)
-            complex_date = match.group(3)
+        if not match:
+            continue
+
+        for part in match:
+            if len(part) != 3:
+                continue
+
+            days, month_verb, complex_date = part
             if complex_date:
                 # Если найдена дата, то добавляем ее в список
                 result.append(datetime.strptime(complex_date, "%d.%m.%Y").date())
@@ -302,4 +306,4 @@ def find_dates_in_text(text: str) -> List[date]:
                     except ValueError:
                         pass
 
-        return result
+    return result

@@ -55,3 +55,11 @@ class TestFindDatesInText(TestCase):
                 "В сети 6000 В 25.01.2024г. с 08:00 до 17:00 будет прекращена подача электроэнергии"
             ),
         )
+
+    def test_find_dates_in_text7(self):
+        """В 04.03.2024г и 05.03.2024г"""
+        current_year = datetime.now().year
+        self.assertListEqual(
+            [date(current_year, 3, 4), date(current_year, 3, 5)],
+            find_dates_in_text("В 04.03.2024г. и 05.03.2024г. ежедневно с 09:00 до 16:00 "),
+        )
