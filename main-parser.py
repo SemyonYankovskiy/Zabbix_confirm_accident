@@ -2,12 +2,19 @@ import json
 import logging
 import pathlib
 from datetime import date
+from typing import Tuple, List
 
-import schedule
+from bs4 import Tag
 
 from app.address_convert import house_splitter, address_cleaner
 from app.datetime_convert import str_to_datetime_ranges
-from app.parser import get_planned_outage_data, get_planned_outages_urls, content_parser
+from app.parser import (
+    get_planned_outage_data,
+    get_planned_outages_urls,
+    get_current_outages_urls,
+    get_current_outage_data,
+    content_parser,
+)
 
 logging.basicConfig(
     level=logging.DEBUG,
@@ -17,6 +24,24 @@ logging.basicConfig(
 logging.debug("===============\nSTART")
 
 
+def precess_article_data(data: Tuple[str, Tag]) -> List[dict]:
+    time_range, content = data
+    base_time_ranges = str_to_datetime_ranges(time_range)
+
+    parsed_content = content_parser(content, base_time_ranges)
+    outages = []
+    for address, houses, time_ranges in parsed_content:
+        correct_address = address_cleaner(address)
+        houses_list = house_splitter(houses)
+        outages_json = {
+            "address": correct_address,
+            "houses": houses_list,
+            "times": time_ranges,
+        }
+        outages.append(outages_json)
+    return outages
+
+
 def main():
     list_of_outages = []
 
@@ -24,20 +49,13 @@ def main():
         data = get_planned_outage_data(url)
         if data is None:
             continue
-        time_range, content = data
-        base_time_ranges = str_to_datetime_ranges(time_range)
+        list_of_outages.extend(precess_article_data(data))
 
-        parsed_content = content_parser(content, base_time_ranges)
-
-        for address, houses, time_ranges in parsed_content:
-            correct_address = address_cleaner(address)
-            houses_list = house_splitter(houses)
-            outages_json = {
-                "address": correct_address,
-                "houses": houses_list,
-                "times": time_ranges,
-            }
-            list_of_outages.append(outages_json)
+    for url in get_current_outages_urls():
+        data = get_current_outage_data(url)
+        if data is None:
+            continue
+        list_of_outages.extend(precess_article_data(data))
 
     json_string = json.dumps(list_of_outages, indent=2, ensure_ascii=False, default=str)
 
@@ -47,10 +65,8 @@ def main():
     with (folder / f"{date.today()}.json").open("w", encoding="utf-8") as outfile:
         outfile.write(json_string)
 
-    print(json_string)
-
 
 if __name__ == "__main__":
     # Каждые 2 часа запускаем скрипт
-    schedule.every(2).hours.do(main)
+    # schedule.every(2).hours.do(main)
     main()

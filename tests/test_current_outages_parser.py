@@ -1382,3 +1382,10 @@ class TestCurrentParser4(TestCurrentParser):
                 ],
             },
         ]
+
+
+class TestCurrentParser5(TestCurrentParser):
+    @classmethod
+    def setUpClass(cls):
+        cls.url = "https://sevenergo.net/news/incident/otklyuchenie-elektroenergii-12-fevralya-4.html"
+        cls.valid = []
