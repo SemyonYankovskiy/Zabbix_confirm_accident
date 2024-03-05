@@ -1387,5 +1387,12 @@ class TestCurrentParser4(TestCurrentParser):
 class TestCurrentParser5(TestCurrentParser):
     @classmethod
     def setUpClass(cls):
-        cls.url = "https://sevenergo.net/news/incident/otklyuchenie-elektroenergii-12-fevralya-4.html"
+        cls.url = "https://sevenergo.net/news/incident/otklyuchenie-elektroenergii-18-yanvarya-3.html"
+        cls.valid = []
+
+
+class TestCurrentParser6(TestCurrentParser):
+    @classmethod
+    def setUpClass(cls):
+        cls.url = "https://sevenergo.net/news/incident/otklyuchenie-elektroenergii-4-i-5-marta.html"
         cls.valid = []

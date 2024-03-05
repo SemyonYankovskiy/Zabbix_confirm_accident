@@ -12,6 +12,137 @@ from app.datetime_convert import update_datetime_pair, find_dates_in_text
 from app.request import request_get
 
 
+class ContentParser:
+    """
+    Находит в содержимом адреса и приводит их к формату (адрес, перечень номеров домов).
+    Учитывает, что в блоке может быть указан также посёлок.
+    Также в содержимом может содержаться уточнение временного диапазона отключения, в таком случае
+    будет скорректировано на основе основного времени.
+    """
+
+    def __init__(self, content: bs4.Tag, origin_times: List[Tuple[datetime, datetime]]):
+        self._content = content
+        self._origin_times = origin_times
+
+        self._result = []
+        self._town = ""
+        self._town_children_under_padding = True
+        self._current_time_ranges = origin_times
+
+    class SkipIterationException(Exception):
+        pass
+
+    def _find_and_set_new_dates(self, text: str) -> bool:
+        # Если нужно уточнить даты отключения.
+        dates = find_dates_in_text(text)
+        if dates:
+            valid_time_ranges = []
+            # Проходим по всем начальным диапазонам отключения.
+            for time_range_pair in self._origin_times:
+                if time_range_pair[0].date() in dates:
+                    valid_time_ranges.append(time_range_pair)
+            self._current_time_ranges = valid_time_ranges
+        return len(dates) > 0
+
+    def _find_and_set_new_times(self, text: str) -> bool:
+        # Если указан другой временной диапазон в формате: с 08:00 до 13:00
+        # Также учитываем возможную ошибку символа `с` на англ. и рус.
+        match = re.search(r"[сc]\s+(\d\d:\d\d)\s+до\s+(\d\d:\d\d)", text)
+        if match:
+            self._current_time_ranges = [
+                update_datetime_pair(pair, text) for pair in self._current_time_ranges
+            ]
+        return match is not None
+
+    def _find_and_set_times_and_dates(self, text: str):
+        found_dates = self._find_and_set_new_dates(text)
+        found_times = self._find_and_set_new_times(text)
+        if found_dates or found_times:
+            raise self.SkipIterationException
+
+    def _process_strong_tag(self, tag: bs4.Tag):
+        tag_text = tag.text.strip()
+        strong_tag = tag.find("strong")
+
+        if not re.search(r"\d", tag_text):
+            # Если нет ни одной цифры в тексте тега, значит это название поселка (села).
+            self._find_and_set_new_town(r"([а-яА-Я. ]+)", tag_text)
+            raise self.SkipIterationException
+
+        if strong_tag and strong_tag.text.strip() and strong_tag.text != tag_text:
+            # Если текст, который в теге <strong> не содержит весь текст тега,
+            # то это означает, что в теге имеется как указание поселка, так и его улицы.
+            # Необходимо рассматривать этот тег далее без префикса населенного пункта.
+            self._town = ""
+
+    def _find_and_set_new_town(self, pattern: str | re.Pattern[str], text: str) -> None:
+        town_math = re.match(pattern, text)
+        if town_math:
+            self._town = town_math.group(1)
+            raise self.SkipIterationException
+
+    def _check_tag(self, tag: bs4.Tag) -> None:
+        if tag.name not in ("p", "div"):
+            raise self.SkipIterationException
+
+    def _find_addresses(self, tag: bs4.Tag):
+        text = tag.text.strip()
+        for line in text.split(";"):
+            if not line.strip():
+                continue
+
+            address, houses = divide_by_address_and_house_numbers(line)
+            if address:
+                if self._town:
+                    # Добавляем населенный пункт, если он есть.
+                    address = self._town + ", " + address
+
+                self._result.append((address, houses, self._current_time_ranges))
+
+    def _process_town(self, tag: bs4.Tag) -> None:
+        if "padding-left" in str(tag.get_attribute_list("style")):
+            # Если в стилях тега имеется отступ, то это означает,
+            # что данная запись относится к ранее указанному населенному пункту.
+            self._town_children_under_padding = True
+
+        elif self._town and self._town_children_under_padding:
+            # Если имеется ранее указанный населенный пункт и требуется искать улицу в отступе, но его нет,
+            # значит будем учитывать, что последующие записи населенного пункта будут до следующей пустой строчки.
+            self._town_children_under_padding = False
+
+        if self._town and not self._town_children_under_padding:
+            # Если нет отступа, то будем учитывать,
+            # что последующие записи населенного пункта будут до следующей пустой строчки.
+            if not tag.text.strip():
+                self._town = ""
+
+    def parse(self) -> List[Tuple[str, str, List[Tuple[datetime, datetime]]]]:
+        for tag in self._content.find_all(True):
+
+            try:
+                self._check_tag(tag)
+                tag_text = tag.text.strip() if tag.text else ""
+
+                self._find_and_set_times_and_dates(tag_text)
+
+                # Если в теге имеется тег <strong>, значит необходимо выполнить отдельную проверку
+                if "strong" in str(tag) and tag_text:
+                    self._process_strong_tag(tag)
+
+                elif tag_text:
+                    # Ищем село или поселок в тексте тега.
+                    # Также учитываем возможную ошибку символа `с` на англ. и рус.
+                    self._find_and_set_new_town(r"(?:[cс]\.|по[cс]\.|г\.|п\.)\s*([а-яА-Я]+)[:;]?$", tag_text)
+
+                self._process_town(tag)
+                self._find_addresses(tag)
+
+            except self.SkipIterationException:
+                continue
+
+        return self._result
+
+
 def content_parser(
     content: bs4.Tag, origin_times: List[Tuple[datetime, datetime]]
 ) -> List[Tuple[str, str, List[Tuple[datetime, datetime]]]]:
@@ -26,92 +157,8 @@ def content_parser(
     :return
     """
 
-    result = []
-    town = ""
-    town_children_under_padding = True
-    current_time_ranges = origin_times
-
-    for tag in content.find_all(True):
-        datetime_modified = False
-        if tag.name not in ("p", "div"):
-            continue
-
-        tag_text = tag.text.strip() if tag.text else ""
-
-        # Если нужно уточнить даты отключения.
-        new_dates_match = find_dates_in_text(tag_text)
-        if new_dates_match:
-            datetime_modified = True
-            valid_time_ranges = []
-            # Проходим по всем начальным диапазонам отключения.
-            for time_range_pair in origin_times:
-                if time_range_pair[0].date() in new_dates_match:
-                    valid_time_ranges.append(time_range_pair)
-            current_time_ranges = valid_time_ranges
-
-        # Если указан другой временной диапазон в формате: с 08:00 до 13:00
-        # Также учитываем возможную ошибку символа `с` на англ. и рус.
-        if re.search(r"[сc]\s+(\d\d:\d\d)\s+до\s+(\d\d:\d\d)", tag_text):
-            datetime_modified = True
-            current_time_ranges = [update_datetime_pair(pair, tag_text) for pair in current_time_ranges]
-
-        # Если было уточнение временного диапазона отключения, то пропускаем текущий блок.
-        if datetime_modified:
-            continue
-
-        # Если в теге имеется тег <strong>, значит необходимо выполнить отдельную проверку
-        if "strong" in str(tag) and tag_text:
-            strong_tag = tag.find("strong")
-
-            if not re.search(r"\d", tag_text):
-                # Если нет ни одной цифры в тексте тега, значит это название поселка (села).
-                match = re.search(r"[а-яА-Я. ]+", tag_text)
-                town = match.group(0) if match else ""
-                continue
-
-            if strong_tag and strong_tag.text.strip() and strong_tag.text != tag_text:
-                # Если текст, который в теге <strong> не содержит весь текст тега,
-                # то это означает, что в теге имеется как указание поселка, так и его улицы.
-                # Необходимо рассматривать этот тег далее без префикса населенного пункта.
-                town = ""
-
-        elif tag_text:
-            # Если указано село или поселок не в strong
-            # Также учитываем возможную ошибку символа `с` на англ. и рус.
-            town_math = re.match(r"([cс]\.|по[cс]\.|г\.|п\.)\s*([а-яА-Я]+)[:;]?$", tag_text)
-            if town_math:
-                town = town_math.group(2)
-                continue
-
-        address, houses = divide_by_address_and_house_numbers(tag.text)
-
-        if "padding-left" in str(tag.get_attribute_list("style")):
-            # Если в стилях тега имеется отступ, то это означает,
-            # что данная запись относится к ранее указанному населенному пункту.
-            town_children_under_padding = True
-
-        elif town and town_children_under_padding:
-            # Если имеется ранее указанный населенный пункт и требуется искать улицу в отступе, но его нет,
-            # значит будем учитывать, что последующие записи населенного пункта будут до следующей пустой строчки.
-            town_children_under_padding = False
-
-        if town and not town_children_under_padding:
-            # Если нет отступа, то будем учитывать,
-            # что последующие записи населенного пункта будут до следующей пустой строчки.
-            if not address:
-                town = ""
-
-        # Пропускаем пустой адрес
-        if not address:
-            continue
-
-        # Добавляем населенный пункт, если он есть.
-        if town:
-            address = town + ", " + address
-
-        result.append((address, houses, current_time_ranges))
-
-    return result
+    parser = ContentParser(content, origin_times)
+    return parser.parse()
 
 
 def get_planned_outages_urls(site: str = "https://sevenergo.net") -> List[str]:

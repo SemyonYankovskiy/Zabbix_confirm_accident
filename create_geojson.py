@@ -16,7 +16,7 @@ def get_coordinates(address: str) -> Tuple[float, float]:
     return loc.latitude, loc.longitude
 
 
-def find_address_and_append(address: str, geojson: GeoJSON):
+def find_address_and_append(address: str, time_range: str, marker_color: str, geojson: GeoJSON):
     try:
         ya = YaMap()
         loc = ya.get_coords(address)
@@ -25,7 +25,14 @@ def find_address_and_append(address: str, geojson: GeoJSON):
         return
     if not loc:
         return
-    geojson.add_point((loc[1], loc[0]), properties={"description": address, "marker-color": "#ed4543"})
+    geojson.add_point(
+        (loc[1], loc[0]),
+        properties={
+            "iconCaption": time_range,
+            "description": address + "\n" + time_range,
+            "marker-color": marker_color,
+        },
+    )
 
 
 def main():
@@ -48,21 +55,22 @@ def main():
             address = "Севастополь, " + item["address"]
 
             for time in item["times"]:
+                time_from = datetime.strptime(time[0], "%Y-%m-%d %H:%M:%S")
+                time_to = datetime.strptime(time[1], "%Y-%m-%d %H:%M:%S")
                 # Обрабатываем только отключения, которые активны сейчас.
-                if not (
-                    datetime.strptime(time[0], "%Y-%m-%d %H:%M:%S")
-                    <= now
-                    <= datetime.strptime(time[1], "%Y-%m-%d %H:%M:%S")
-                ):
+                if not (time_from <= now <= time_to):
                     continue
 
+                time_range = f"с {time_from.strftime('%H:%M')} до {time_to.strftime('%H:%M')}"
+                marker_color = "#FF0000" if item["type"] == "current" else "#FF6800"
+
                 if not item.get("houses"):
-                    executor.submit(find_address_and_append, address, geojson)
+                    executor.submit(find_address_and_append, address, time_range, marker_color, geojson)
                     continue
 
                 for house in item["houses"]:
                     address += ", " + house
-                    executor.submit(find_address_and_append, address, geojson)
+                    executor.submit(find_address_and_append, address, time_range, marker_color, geojson)
                     break
 
     geojson.create_file(f"outages/{date.today()}.geojson")

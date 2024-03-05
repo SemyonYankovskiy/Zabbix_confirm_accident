@@ -29,7 +29,7 @@ class GeoJSON:
         return self._geojson
 
     def create_file(self, file_path: Union[str, Path]) -> None:
-        geojson_string = json.dumps(self._geojson, indent=2, ensure_ascii=False, default=str)
+        geojson_string = json.dumps(self._geojson, indent=2, ensure_ascii=True, default=str)
         with open(file_path, "w", encoding="utf-8") as outfile:
             outfile.write(geojson_string)
 
