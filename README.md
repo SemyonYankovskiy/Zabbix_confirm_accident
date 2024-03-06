@@ -61,13 +61,21 @@ mypy app geo_map
 pylint app geo_map
 ```
 
-#### Запуск парсера
+### Запуск парсера и GeoMap
+
+Необходимо указать переменные окружения, для отправки файла `geojson` 
+на определённый слой в программе `ecstasy`:
+
+    ECSTASY_API_URL       # http://domain
+    ECSTASY_API_USERNAME
+    ECSTASY_API_PASSWORD
+    ECSTASY_LAYER_NAME    # название слоя
 
 ```shell
 python main-parser.py
 ```
 
-#### Запуск обработчика событий
+### Запуск обработчика событий
 
 Необходимо указать переменные окружения:
 

@@ -35,7 +35,7 @@ def find_address_and_append(address: str, time_range: str, marker_color: str, ge
     )
 
 
-def main():
+def run():
     """
     Открывает файл `data-YYYY-MM-DD.json` текущего дня и преобразует отключения,
     которые в данный момент актуальны в метки с координатами и создает
@@ -77,4 +77,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    run()

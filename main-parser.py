@@ -8,6 +8,7 @@ from typing import Tuple, List
 import schedule
 from bs4 import Tag
 
+import create_geojson
 from app.address_convert import house_splitter, address_cleaner
 from app.datetime_convert import str_to_datetime_ranges, current_str_to_datetime_ranges
 from app.misc import get_environ
@@ -18,7 +19,7 @@ from app.parser import (
     get_current_outage_data,
     content_parser,
 )
-from geo_map.api import API
+from geo_map.api import API, UnauthorizedException
 
 logging.basicConfig(
     level=logging.DEBUG,
@@ -77,15 +78,22 @@ def parse_outages():
 
 def main():
     parse_outages()
+    create_geojson.run()  # Создаем геоданные.
+
+    # Отправляем данные.
     api = API(
         url=get_environ("ECSTASY_API_URL"),
         username=get_environ("ECSTASY_API_USERNAME"),
         password=get_environ("ECSTASY_API_PASSWORD"),
     )
-    api.update_layer("Отключения Севэнерго", "outages/2024-03-05.geojson")
+    try:
+        api.update_layer(get_environ("ECSTASY_LAYER_NAME"), f"outages/{date.today()}.geojson")
+    except UnauthorizedException as exc:
+        logging.error("Неудачная попытка обновления геоданных: %s", exc)
 
 
 if __name__ == "__main__":
+    main()
     # Каждые 2 часа запускаем скрипт
     schedule.every(2).hours.do(main)
     while True:

@@ -6,6 +6,8 @@ services:
     image: zabbix-confirm-accident:0.1
     build: .
     command: main-parser.py
+    env_file:
+      - ".env"
     volumes:
       - "outages:/app/outages"
 
