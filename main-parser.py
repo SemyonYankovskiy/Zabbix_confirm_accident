@@ -1,13 +1,16 @@
 import json
 import logging
 import pathlib
+import time
 from datetime import date, datetime
 from typing import Tuple, List
 
+import schedule
 from bs4 import Tag
 
 from app.address_convert import house_splitter, address_cleaner
 from app.datetime_convert import str_to_datetime_ranges, current_str_to_datetime_ranges
+from app.misc import get_environ
 from app.parser import (
     get_planned_outage_data,
     get_planned_outages_urls,
@@ -15,6 +18,7 @@ from app.parser import (
     get_current_outage_data,
     content_parser,
 )
+from geo_map.api import API
 
 logging.basicConfig(
     level=logging.DEBUG,
@@ -42,7 +46,7 @@ def get_parsed_data(content: Tag, base_time_ranges: List[Tuple[datetime, datetim
     return outages
 
 
-def main():
+def parse_outages():
     list_of_outages = []
 
     # Плановые отключения.
@@ -71,7 +75,19 @@ def main():
         outfile.write(json_string)
 
 
+def main():
+    parse_outages()
+    api = API(
+        url=get_environ("ECSTASY_API_URL"),
+        username=get_environ("ECSTASY_API_USERNAME"),
+        password=get_environ("ECSTASY_API_PASSWORD"),
+    )
+    api.update_layer("Отключения Севэнерго", "outages/2024-03-05.geojson")
+
+
 if __name__ == "__main__":
     # Каждые 2 часа запускаем скрипт
-    # schedule.every(2).hours.do(main)
-    main()
+    schedule.every(2).hours.do(main)
+    while True:
+        schedule.run_pending()
+        time.sleep(1)
