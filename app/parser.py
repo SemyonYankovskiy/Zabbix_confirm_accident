@@ -67,13 +67,15 @@ class ContentParser:
         if not re.search(r"\d", tag_text):
             # Если нет ни одной цифры в тексте тега, значит это название поселка (села).
             self._find_and_set_new_town(r"([а-яА-Я. ]+)", tag_text)
-            raise self.SkipIterationException
 
         if strong_tag and strong_tag.text.strip() and strong_tag.text != tag_text:
             # Если текст, который в теге <strong> не содержит весь текст тега,
             # то это означает, что в теге имеется как указание поселка, так и его улицы.
             # Необходимо рассматривать этот тег далее без префикса населенного пункта.
-            self._town = ""
+            try:
+                self._find_and_set_new_town(r"([а-яА-Я. ]+)", strong_tag.text)
+            except self.SkipIterationException:
+                pass
 
     def _find_and_set_new_town(self, pattern: str | re.Pattern[str], text: str) -> None:
         town_math = re.match(pattern, text)
@@ -93,7 +95,7 @@ class ContentParser:
 
             address, houses = divide_by_address_and_house_numbers(line)
             if address:
-                if self._town:
+                if self._town and not address.startswith(self._town):
                     # Добавляем населенный пункт, если он есть.
                     address = self._town + ", " + address
 
