@@ -53,7 +53,6 @@ def run():
 
     with ThreadPoolExecutor(max_workers=200) as executor:
         for item in data:
-            address = "Севастополь, " + item["address"]
 
             for time in item["times"]:
                 time_from = datetime.strptime(time[0], "%Y-%m-%d %H:%M:%S")
@@ -66,11 +65,12 @@ def run():
                 marker_color = "#FF0000" if item["type"] == "current" else "#FF6800"
 
                 if not item.get("houses"):
+                    address = "Севастополь, " + item["address"]
                     executor.submit(find_address_and_append, address, time_range, marker_color, geojson)
                     continue
 
                 for house in item["houses"]:
-                    address += ", " + house
+                    address = "Севастополь, " + item["address"] + ", " + house
                     executor.submit(find_address_and_append, address, time_range, marker_color, geojson)
 
     geojson.create_file(f"outages/{date.today()}.geojson")
