@@ -19,6 +19,7 @@ def get_coordinates(address: str) -> Tuple[float, float]:
 def find_address_and_append(address: str, time_range: str, marker_color: str, geojson: GeoJSON):
     try:
         ya = YaMap()
+        print(address)
         loc = ya.get_coords(address)
     except Exception as exc:
         print(address, exc)
@@ -71,7 +72,6 @@ def run():
                 for house in item["houses"]:
                     address += ", " + house
                     executor.submit(find_address_and_append, address, time_range, marker_color, geojson)
-                    break
 
     geojson.create_file(f"outages/{date.today()}.geojson")
 
