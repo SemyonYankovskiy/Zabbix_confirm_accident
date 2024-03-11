@@ -4,7 +4,9 @@ services:
 
   parser: &base
     image: zabbix-confirm-accident:0.1
-    build: Dockerfile
+    build:
+      context: .
+      dockerfile: Dockerfile
     command: main-parser.py
     env_file:
       - ".env"
