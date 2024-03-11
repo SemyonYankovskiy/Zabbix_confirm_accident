@@ -58,7 +58,7 @@ def run():
                 time_from = datetime.strptime(time[0], "%Y-%m-%d %H:%M:%S")
                 time_to = datetime.strptime(time[1], "%Y-%m-%d %H:%M:%S")
                 # Обрабатываем только отключения, которые активны сейчас.
-                if not (time_from <= now <= time_to):
+                if time_from.date() != now.date():
                     continue
 
                 time_range = f"с {time_from.strftime('%H:%M')} до {time_to.strftime('%H:%M')}"
