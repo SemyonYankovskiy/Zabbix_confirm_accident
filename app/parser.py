@@ -87,8 +87,7 @@ class ContentParser:  # pylint: disable=too-few-public-methods
         if tag.name not in ("p", "div"):
             raise self.SkipIterationException
 
-    def _find_addresses(self, tag: bs4.Tag):
-        text = tag.text.strip()
+    def _find_addresses(self, text: str):
         for line in text.split(";"):
             if not line.strip():
                 continue
@@ -151,7 +150,7 @@ class ContentParser:  # pylint: disable=too-few-public-methods
                 self._find_and_set_new_town(r"(?:[cс]\.|по[cс]\.|г\.|п\.)\s*([а-яА-Я]+)[:;]?$", tag_text)
 
             self._process_town(tag)
-            self._find_addresses(tag)
+            self._find_addresses(tag_text)
 
         except self.SkipIterationException:
             pass

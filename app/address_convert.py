@@ -50,10 +50,7 @@ def house_splitter(houses: str) -> List[str]:
                 continue
             if start.isnumeric() and stop.isnumeric():
                 start_num = int(start)
-                stop_num = int(stop)
-                if start_num > stop_num:
-                    start_num, stop_num = stop_num, start_num
-                stop_num = min(stop_num, 600)
+                stop_num = min(int(stop), 600)
                 for house_num in range(start_num, stop_num + 1, 2):
                     ext_address.append(f"{house_num}")
         else:
