@@ -77,7 +77,7 @@ class ContentParser:  # pylint: disable=too-few-public-methods
             except self.SkipIterationException:
                 pass
 
-    def _find_and_set_new_town(self, pattern: str | re.Pattern[str], text: str) -> None:
+    def _find_and_set_new_town(self, pattern: str, text: str) -> None:
         town_math = re.match(pattern, text)
         if town_math:
             self._town = town_math.group(1)
@@ -118,29 +118,52 @@ class ContentParser:  # pylint: disable=too-few-public-methods
             if not tag.text.strip():
                 self._town = ""
 
+    def _check_notag_exp(self):
+        html_string = str(self._content)
+
+        # Разбиваем строку на строки по тегу <br>
+        lines = html_string.split("<br/>")
+
+        # Оборачиваем каждую строку в теги <p>
+        wrapped_lines = [f"<p>{line.strip()}</p>" for line in lines]
+
+        # Соединяем строки обратно в одну строку
+        processed_html = "\n".join(wrapped_lines)
+        new_str = processed_html[3:]
+        new_str2 = new_str[:-4]
+
+        self._content = BeautifulSoup(new_str2, 'html.parser')
+
+    def _process_tag(self, tag):
+        try:
+            self._check_tag(tag)
+            tag_text = tag.text.strip() if tag.text else ""
+
+            self._find_and_set_times_and_dates(tag_text)
+
+            # Если в теге имеется тег <strong>, значит необходимо выполнить отдельную проверку
+            if "strong" in str(tag) and tag_text:
+                self._process_strong_tag(tag)
+
+            elif tag_text:
+                # Ищем село или поселок в тексте тега.
+                # Также учитываем возможную ошибку символа с на англ. и рус.
+                self._find_and_set_new_town(r"(?:[cс]\.|по[cс]\.|г\.|п\.)\s*([а-яА-Я]+)[:;]?$", tag_text)
+
+            self._process_town(tag)
+            self._find_addresses(tag)
+
+        except self.SkipIterationException:
+            pass
+
     def parse(self) -> List[Tuple[str, str, List[Tuple[datetime, datetime]]]]:
         for tag in self._content.find_all(True):
+            self._process_tag(tag)
 
-            try:
-                self._check_tag(tag)
-                tag_text = tag.text.strip() if tag.text else ""
-
-                self._find_and_set_times_and_dates(tag_text)
-
-                # Если в теге имеется тег <strong>, значит необходимо выполнить отдельную проверку
-                if "strong" in str(tag) and tag_text:
-                    self._process_strong_tag(tag)
-
-                elif tag_text:
-                    # Ищем село или поселок в тексте тега.
-                    # Также учитываем возможную ошибку символа `с` на англ. и рус.
-                    self._find_and_set_new_town(r"(?:[cс]\.|по[cс]\.|г\.|п\.)\s*([а-яА-Я]+)[:;]?$", tag_text)
-
-                self._process_town(tag)
-                self._find_addresses(tag)
-
-            except self.SkipIterationException:
-                continue
+        if not self._result:
+            self._check_notag_exp()
+            for tag in self._content.find_all(True):
+                self._process_tag(tag)
 
         return self._result
 
