@@ -12,7 +12,7 @@ from app.datetime_convert import update_datetime_pair, find_dates_in_text
 from app.request import request_get
 
 
-class ContentParser:
+class ContentParser:  # pylint: disable=too-few-public-methods
     """
     Находит в содержимом адреса и приводит их к формату (адрес, перечень номеров домов).
     Учитывает, что в блоке может быть указан также посёлок.
@@ -21,13 +21,13 @@ class ContentParser:
     """
 
     def __init__(self, content: bs4.Tag, origin_times: List[Tuple[datetime, datetime]]):
-        self._content = content
-        self._origin_times = origin_times
+        self._content: bs4.Tag = content
+        self._origin_times: List[Tuple[datetime, datetime]] = origin_times
 
-        self._result = []
-        self._town = ""
-        self._town_children_under_padding = True
-        self._current_time_ranges = origin_times
+        self._result: List[Tuple[str, str, List[Tuple[datetime, datetime]]]] = []
+        self._town: str = ""
+        self._town_children_under_padding: bool = True
+        self._current_time_ranges: List[Tuple[datetime, datetime]] = origin_times
 
     class SkipIterationException(Exception):
         pass
@@ -214,7 +214,7 @@ def get_current_outages_urls() -> List[str]:
 
         soup = BeautifulSoup(resp.text, "lxml")
         blog = soup.find("div", {"class": "blog"})
-        if not blog:
+        if not isinstance(blog, bs4.Tag):
             return []
 
         for link in blog.findAll("a"):
@@ -243,3 +243,5 @@ def get_current_outage_data(url: str) -> Optional[Tuple[str, bs4.Tag]]:
 
     if isinstance(content, bs4.Tag) and isinstance(time_range, bs4.Tag):
         return time_range.text.strip(), content
+
+    return None

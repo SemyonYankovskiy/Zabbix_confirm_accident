@@ -24,7 +24,7 @@ class API:
         self.password = password
         self.session = requests.Session()
 
-    def login(self):
+    def login(self) -> None:
         resp = self.session.post(
             f"{self.url}/api/token", data={"username": self.username, "password": self.password}
         )
@@ -34,7 +34,7 @@ class API:
             self.session.headers.update({"Authorization": f"Bearer {token}"})
 
     @auth_decorator
-    def update_layer(self, layer_name: str, file_path: str):
+    def update_layer(self, layer_name: str, file_path: str) -> None:
         layer_id = None
         resp = self.session.get(f"{self.url}/maps/api/layers?name={layer_name}")
         if resp.status_code in [401, 403]:
@@ -44,11 +44,10 @@ class API:
             data = resp.json()
             print("Layers:", data)
             if len(data) > 0:
-                layer_id = data[0]["id"]
+                layer_id = data[0].get("id", None)
 
         if layer_id is not None:
-            form_data = {"from_file": open(file_path, "rb")}
-            resp = self.session.patch(f"{self.url}/maps/api/layers/{layer_id}/", files=form_data)
-            print(resp)
-            if resp.status_code in [401, 403]:
-                raise UnauthorizedException(resp.text)
+            with open(file_path, "rb") as f:
+                resp = self.session.patch(f"{self.url}/maps/api/layers/{layer_id}/", files={"from_file": f})
+                if resp.status_code in [401, 403]:
+                    raise UnauthorizedException(resp.text)

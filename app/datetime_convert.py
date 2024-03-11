@@ -134,7 +134,7 @@ def update_datetime_pair(pair: Tuple[datetime, datetime], time_correction: str) 
     return pair
 
 
-def current_str_to_datetime_ranges(input_str):
+def current_str_to_datetime_ranges(input_str: str) -> List[Tuple[datetime, datetime]]:
     ranges: List[Tuple[datetime, datetime]] = []
 
     current_year = datetime.now().year
@@ -143,13 +143,12 @@ def current_str_to_datetime_ranges(input_str):
         r"(\d.*?) +(января|февраля|марта|апреля|мая|июня|июля|августа|сентрября|октября|ноября|декабря)",
         input_str,
     )
-    day = day_and_months.group(1)
-    days = []
+    day = day_and_months.group(1) if day_and_months else ""
 
     simple_day = re.match(r"^\d+$", day)
     few_days = re.match(r"^\d+(,\d+)+(\sи\s\d+)?$", day)
     range_days_verb = re.match(r"^(\d+)\sи\s(\d+)?$", day)
-    range_days_symbol = re.match(r"^\d+\-\d+$", day)
+    range_days_symbol = re.match(r"^\d+-\d+$", day)
 
     if simple_day:
         # print(f"Простая дата: {simple_day.group(0)}")
@@ -167,18 +166,17 @@ def current_str_to_datetime_ranges(input_str):
         return ranges
         # print(f"Некорректный формат: {day}")
 
-    month_verb = day_and_months.group(2)
-    month_num = int(MONTH_VERBS.get(month_verb))
+    month_verb: str = day_and_months.group(2) if day_and_months else ""
+    month_num: int = MONTH_VERBS.get(month_verb, -1)
 
     dates = []
-    for day in days:
-        is_valid = is_valid_date(day, month_num)
-        if is_valid:
+    for day_number in days:
+        if is_valid_date(day_number, month_num):
             # print(f"Дата {day}.{month_num} валидна")
-            dates.append(f"{day}.{month_num}.{current_year}")
+            dates.append(f"{day_number}.{month_num}.{current_year}")
 
         else:
-            print(f"Дата {day}.{month_num} невалидна")
+            # print(f"Дата {day}.{month_num} невалидна")
             return ranges
 
     if range_days_verb or range_days_symbol:
@@ -187,11 +185,10 @@ def current_str_to_datetime_ranges(input_str):
     for item_date in dates:
         add_datetime_pair_to(ranges, f"{item_date} 08:00", f"{item_date} 17:00")
 
-    print(ranges)
     return ranges
 
 
-def is_valid_date(day, month):
+def is_valid_date(day: int, month: int) -> bool:
     # Проверка корректности номера месяца
     if month < 1 or month > 12:
         return False
@@ -248,11 +245,11 @@ def get_days_list(days: str) -> List[int]:
             start_date = days_range[0].strip()
             end_date = days_range[1].strip()
             if start_date.isdigit() and end_date.isdigit():
-                return [i for i in range(int(start_date), int(end_date) + 1)]
-            else:
-                return []  # Если даты не валидны, то возвращаем пустой список
-        else:
-            return []  # Если не получилось преобразовать дату, то возвращаем пустой список.
+                return list(range(int(start_date), int(end_date) + 1))
+
+        # Если даты не валидны, то возвращаем пустой список
+        # Если не получилось преобразовать дату, то возвращаем пустой список.
+        return []
 
     if re.search(r"[и,]", days):
         days_range = re.split(r"\s*[и,]\s*", days)
@@ -297,10 +294,9 @@ def find_dates_in_text(text: str) -> List[date]:
 
             elif days and month_verb:
                 # Если найдены дни и месяц, то добавляем все возможные даты в список
-                days_list = get_days_list(days)
-                month_num = MONTH_VERBS.get(month_verb)
-                current_year = datetime.now().year
-                for day in days_list:
+                month_num: int = MONTH_VERBS.get(month_verb, -1)
+                current_year: int = datetime.now().year
+                for day in get_days_list(days):
                     try:
                         result.append(date(current_year, month_num, int(day)))
                     except ValueError:
