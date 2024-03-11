@@ -132,12 +132,12 @@ class ContentParser:  # pylint: disable=too-few-public-methods
         new_str = processed_html[3:]
         new_str2 = new_str[:-4]
 
-        self._content = BeautifulSoup(new_str2, 'html.parser')
+        self._content = BeautifulSoup(new_str2, "html.parser")
 
     def _process_tag(self, tag):
         try:
             self._check_tag(tag)
-            tag_text = tag.text.strip() if tag.text else ""
+            tag_text = re.sub("\xa0", " ", tag.text.strip()) if tag.text else ""
 
             self._find_and_set_times_and_dates(tag_text)
 

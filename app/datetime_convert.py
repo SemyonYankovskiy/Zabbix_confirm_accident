@@ -102,7 +102,7 @@ def update_datetime_pair(pair: Tuple[datetime, datetime], time_correction: str) 
     :return: Пара новых дат.
     """
 
-    match = re.search(r"с\s+(\d\d:\d\d)\s+до\s+(\d\d:\d\d)", time_correction, re.IGNORECASE)
+    match = re.search(r"[сc]\s+(\d\d:\d\d)\s+до\s+(\d\d:\d\d)", time_correction, re.IGNORECASE)
     if not match:
         return pair
 
