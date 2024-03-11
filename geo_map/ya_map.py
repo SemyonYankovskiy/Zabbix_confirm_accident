@@ -18,7 +18,7 @@ class SuggestParams:
     def get_param_string(self) -> str:
         return (
             f"callback={self.callback}&v=5&search_type=all&part={self.part}&lang=ru_RU&n=5&origin=jsapi2Geocoder&"
-            f"bbox=33.215581084197936%2C44.51190712146701%2C34.086934233612%2C44.708104806690265&local_only=0"
+            f"bbox=33.366881084197936%2C44.38760712146701%2C34.086934233612%2C44.708104806690265&local_only=0"
         )
 
 
