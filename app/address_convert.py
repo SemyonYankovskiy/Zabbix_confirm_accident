@@ -48,8 +48,15 @@ def house_splitter(houses: str) -> List[str]:
             if not start.isnumeric() or not stop.isnumeric():
                 ext_address.append(item)
                 continue
-            for house_num in range(int(start), int(stop) + 1, 2):
-                ext_address.append(f"{house_num}")
+            if start.isnumeric() and stop.isnumeric():
+                start = int(start)
+                stop = int(stop)
+                if start > stop:
+                    start, stop = stop, start
+                if stop > 600:
+                    stop = 600
+                for house_num in range(start, stop + 1, 2):
+                    ext_address.append(f"{house_num}")
         else:
             ext_address.append(item)
 
