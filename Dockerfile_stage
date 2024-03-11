@@ -7,10 +7,12 @@ RUN addgroup -S appgroup && adduser -S appuser -G appgroup;
 
 WORKDIR /app
 
+COPY requirements-dev.txt .
 COPY requirements.txt .
 
 RUN pip install --no-cache-dir --no-deps --upgrade pip && \
-    pip install --no-cache-dir --no-deps -r requirements.txt
+    pip install --no-cache-dir --no-deps -r requirements.txt && \
+    pip install --no-cache-dir --no-deps -r requirements-dev.txt;
 
 COPY . .
 
