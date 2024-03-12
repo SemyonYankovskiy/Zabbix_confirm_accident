@@ -119,6 +119,9 @@ class ContentParser:  # pylint: disable=too-few-public-methods
             # Если имеется ранее указанный населенный пункт и требуется искать улицу в отступе, но его нет,
             # значит будем учитывать, что последующие записи населенного пункта будут до следующей пустой строчки.
             self._town_children_under_padding = False
+            self._town = ""
+        elif self._town_children_under_padding:
+            self._town_children_under_padding = False
 
         if self._town and not self._town_children_under_padding:
             # Если нет отступа, то будем учитывать,
@@ -144,6 +147,7 @@ class ContentParser:  # pylint: disable=too-few-public-methods
 
     def _process_tag(self, tag):
         try:
+            print(tag)
             self._check_keyword(tag)
             self._check_tag(tag)
             tag_text = re.sub("\xa0", " ", tag.text.strip()) if tag.text else ""
@@ -158,7 +162,6 @@ class ContentParser:  # pylint: disable=too-few-public-methods
                 # Также учитываем возможную ошибку символа с на англ. и рус.
                 self._find_and_set_new_town(r"(?:[cс]\.|по[cс]\.|г\.|п\.)\s*([а-яА-Я]+)[:;]?$", tag_text)
 
-            print("tag_text", tag_text)
             self._process_town(tag)
             self._find_addresses(tag_text)
 

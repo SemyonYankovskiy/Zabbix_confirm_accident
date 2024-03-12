@@ -17,12 +17,12 @@ class TestParser(TestCase):
         class_name = self.__class__.__name__
 
         time_range, content = get_planned_outage_data(self.url)
-        print(f"{class_name} time_range: {time_range} content: {content}")
+        # print(f"{class_name} time_range: {time_range} content: {content}")
         base_time_ranges = str_to_datetime_ranges(time_range)
-        print(f"{class_name} base_time_ranges: {base_time_ranges}")
+        # print(f"{class_name} base_time_ranges: {base_time_ranges}")
 
         parsed_content = content_parser(content, base_time_ranges)
-        print(f"{class_name} parsed_content: {parsed_content}")
+        # print(f"{class_name} parsed_content: {parsed_content}")
 
         for address, houses, time_ranges in parsed_content:
             correct_address = address_cleaner(address)
@@ -34,15 +34,13 @@ class TestParser(TestCase):
             }
             res.append(outages_json)
 
-        print(f"{class_name} {res}")
+        # print(f"{class_name} {res}")
 
         self.assertEqual(self.valid, res)
 
     @classmethod
     def setUpClass(cls) -> None:
-        cls.url = (
-            "https://sevenergo.net/news/kalendar-otklyuchenij-elektroenergii/697.html"
-        )
+        cls.url = "https://sevenergo.net/news/kalendar-otklyuchenij-elektroenergii/697.html"
         cls.valid = [
             {
                 "address": "ул. Севастопольская зона ЮБК",
@@ -116,9 +114,7 @@ class TestParser(TestCase):
 class TestParser2(TestParser):
     @classmethod
     def setUpClass(cls):
-        cls.url = (
-            "https://sevenergo.net/news/kalendar-otklyuchenij-elektroenergii/696.html"
-        )
+        cls.url = "https://sevenergo.net/news/kalendar-otklyuchenij-elektroenergii/696.html"
         cls.valid = [
             {
                 "address": "ул. Колобова",
@@ -136,9 +132,7 @@ class TestParser2(TestParser):
 class TestParser3(TestParser):
     @classmethod
     def setUpClass(cls):
-        cls.url = (
-            "https://sevenergo.net/news/kalendar-otklyuchenij-elektroenergii/695.html"
-        )
+        cls.url = "https://sevenergo.net/news/kalendar-otklyuchenij-elektroenergii/695.html"
         cls.valid = [
             {
                 "address": "ул. Сапунгорская",
@@ -248,9 +242,7 @@ class TestParser3(TestParser):
 class TestParser4(TestParser):
     @classmethod
     def setUpClass(cls):
-        cls.url = (
-            "https://sevenergo.net/news/kalendar-otklyuchenij-elektroenergii/680.html"
-        )
+        cls.url = "https://sevenergo.net/news/kalendar-otklyuchenij-elektroenergii/680.html"
         cls.valid = [
             {
                 "address": "пр. Генерала Острякова",
@@ -298,9 +290,7 @@ class TestParser4(TestParser):
 class TestParser5(TestParser):
     @classmethod
     def setUpClass(cls):
-        cls.url = (
-            "https://sevenergo.net/news/kalendar-otklyuchenij-elektroenergii/689.html"
-        )
+        cls.url = "https://sevenergo.net/news/kalendar-otklyuchenij-elektroenergii/689.html"
         cls.valid = [
             {
                 "address": "пос. Октябрь, ул. 19-го Партсъезда",
@@ -549,9 +539,7 @@ class TestParser5(TestParser):
 class TestParser6(TestParser):
     @classmethod
     def setUpClass(cls):
-        cls.url = (
-            "https://sevenergo.net/news/kalendar-otklyuchenij-elektroenergii/659.html"
-        )
+        cls.url = "https://sevenergo.net/news/kalendar-otklyuchenij-elektroenergii/659.html"
         cls.valid = [
             {
                 "address": "с. Орлиное, ул. Тюкова",
@@ -599,9 +587,7 @@ class TestParser6(TestParser):
 class TestParser7(TestParser):
     @classmethod
     def setUpClass(cls):
-        cls.url = (
-            "https://sevenergo.net/news/kalendar-otklyuchenij-elektroenergii/706.html"
-        )
+        cls.url = "https://sevenergo.net/news/kalendar-otklyuchenij-elektroenergii/706.html"
         cls.valid = [
             {
                 "address": "Федюхины высоты (ООО Севастопольский военно-исторический клуб)",
@@ -1033,9 +1019,7 @@ class TestParser7(TestParser):
 class TestParser8(TestParser):
     @classmethod
     def setUpClass(cls):
-        cls.url = (
-            "https://sevenergo.net/news/kalendar-otklyuchenij-elektroenergii/724.html"
-        )
+        cls.url = "https://sevenergo.net/news/kalendar-otklyuchenij-elektroenergii/724.html"
         cls.valid = [
             {
                 "address": "Доковая балка – СНТ Садоводческий",
@@ -1066,5 +1050,348 @@ class TestParser8(TestParser):
                         datetime(2024, 3, 14, 17, 0),
                     )
                 ],
+            },
+        ]
+
+
+class TestParser9(TestParser):
+    @classmethod
+    def setUpClass(cls):
+        cls.url = "https://sevenergo.net/news/kalendar-otklyuchenij-elektroenergii/729.html"
+        cls.valid = [
+            {
+                "address": "КСП Память Ленина",
+                "houses": [
+                    "1",
+                    "62",
+                    "74",
+                    "75",
+                    "149",
+                    "150",
+                    "180",
+                    "183",
+                    "185",
+                    "405",
+                    "468",
+                    "469",
+                    "470",
+                    "474",
+                ],
+                "times": [(datetime(2024, 3, 21, 8, 0), datetime(2024, 3, 21, 16, 0))],
+            },
+            {
+                "address": "ул. Шафрановая",
+                "houses": [
+                    "2",
+                    "4",
+                    "6",
+                    "8",
+                    "10",
+                    "12",
+                    "14",
+                    "16",
+                    "18",
+                    "24",
+                    "26",
+                    "16а",
+                    "16б",
+                    "16г",
+                    "24а",
+                    "26б",
+                    "26г",
+                ],
+                "times": [(datetime(2024, 3, 21, 8, 0), datetime(2024, 3, 21, 16, 0))],
+            },
+            {
+                "address": "ул. Камышовое шоссе",
+                "houses": ["16в/3", "16в/1", "16в/6", "16в/4", "16в/5", "16/6а", "16В/11А", "16", "20"],
+                "times": [(datetime(2024, 3, 21, 8, 0), datetime(2024, 3, 21, 16, 0))],
+            },
+            {
+                "address": "СНТ Восход",
+                "houses": [],
+                "times": [(datetime(2024, 3, 21, 8, 0), datetime(2024, 3, 21, 16, 0))],
+            },
+            {
+                "address": "х. Отрадный, СНТ Эдельвейс",
+                "houses": [],
+                "times": [(datetime(2024, 3, 21, 8, 0), datetime(2024, 3, 21, 16, 0))],
+            },
+            {
+                "address": "х. Отрадный, СТ Медик-7",
+                "houses": ["1", "7", "18", "20", "24", "28", "кад637"],
+                "times": [(datetime(2024, 3, 21, 8, 0), datetime(2024, 3, 21, 16, 0))],
+            },
+            {
+                "address": "х. Отрадный, ул. Ирисовая",
+                "houses": [
+                    "2а",
+                    "4а",
+                    "10а",
+                    "14а",
+                    "2",
+                    "4",
+                    "6",
+                    "10",
+                    "12",
+                    "18",
+                    "20",
+                    "22",
+                    "24",
+                    "26",
+                    "28",
+                    "15в",
+                    "15г",
+                    "21а",
+                    "21б",
+                    "1",
+                    "3",
+                    "7",
+                    "9",
+                    "11",
+                    "13",
+                    "21",
+                    "23",
+                    "23б",
+                    "24/2",
+                ],
+                "times": [(datetime(2024, 3, 21, 8, 0), datetime(2024, 3, 21, 16, 0))],
+            },
+            {
+                "address": "х. Отрадный, ул. Сапфирная",
+                "houses": [
+                    "1",
+                    "3",
+                    "5",
+                    "7",
+                    "9",
+                    "11",
+                    "13",
+                    "15",
+                    "17",
+                    "8",
+                    "10",
+                    "12",
+                    "2а",
+                    "2б",
+                    "2в",
+                    "2б/1",
+                    "2г",
+                    "9а",
+                    "11а",
+                    "21",
+                    "22",
+                    "25",
+                    "26",
+                    "26/1",
+                    "30б",
+                    "30",
+                    "31",
+                    "32",
+                    "33",
+                    "36",
+                    "43",
+                    "43а",
+                    "43б",
+                    "45",
+                    "45а",
+                    "45б",
+                    "51",
+                    "53",
+                    "53а",
+                    "55",
+                    "61",
+                    "63",
+                    "65/61",
+                    "кад707",
+                    "806",
+                ],
+                "times": [(datetime(2024, 3, 21, 8, 0), datetime(2024, 3, 21, 16, 0))],
+            },
+            {
+                "address": "х. Отрадный, ул. Амет-Хана Султана",
+                "houses": [
+                    "2",
+                    "3",
+                    "4",
+                    "8",
+                    "9",
+                    "11",
+                    "13",
+                    "15",
+                    "21",
+                    "12",
+                    "14",
+                    "16",
+                    "18",
+                    "20",
+                    "22",
+                    "26",
+                    "28",
+                    "34",
+                    "38",
+                    "23",
+                    "25",
+                    "27",
+                    "35",
+                    "37",
+                    "39",
+                    "37/1",
+                    "37/2",
+                    "37/4",
+                    "37/5",
+                    "37/6",
+                    "37/7",
+                    "37/8",
+                    "37/9",
+                    "37/10",
+                    "39а",
+                    "48",
+                    "48А",
+                    "54",
+                    "54А",
+                    "58",
+                    "60",
+                    "62",
+                    "64",
+                    "66",
+                    "68",
+                    "70",
+                    "кад697",
+                    "1063",
+                    "1067",
+                    "1199",
+                    "1253",
+                ],
+                "times": [(datetime(2024, 3, 21, 8, 0), datetime(2024, 3, 21, 16, 0))],
+            },
+            {
+                "address": "х. Отрадный, ул. Согласия",
+                "houses": [
+                    "1",
+                    "1в",
+                    "1в/2",
+                    "1б",
+                    "5",
+                    "7",
+                    "9",
+                    "11",
+                    "6",
+                    "8",
+                    "10",
+                    "14",
+                    "16",
+                    "18",
+                    "20",
+                    "22",
+                    "24",
+                    "26",
+                    "28",
+                    "30",
+                    "34",
+                    "38",
+                    "40",
+                    "44",
+                    "46",
+                    "48",
+                    "50",
+                    "52",
+                    "54",
+                    "19",
+                    "21",
+                    "23",
+                    "25",
+                    "29",
+                    "31",
+                    "33",
+                    "35",
+                    "37",
+                    "58",
+                ],
+                "times": [(datetime(2024, 3, 21, 8, 0), datetime(2024, 3, 21, 16, 0))],
+            },
+            {
+                "address": "ул. Кольцевая",
+                "houses": [
+                    "12а",
+                    "14А",
+                    "4",
+                    "14",
+                    "20",
+                    "1в",
+                    "23а",
+                    "1",
+                    "5",
+                    "7",
+                    "10",
+                    "13",
+                    "21",
+                    "27",
+                    "29",
+                    "31",
+                ],
+                "times": [(datetime(2024, 3, 21, 8, 0), datetime(2024, 3, 21, 16, 0))],
+            },
+            {
+                "address": "ул. Яхонтовая",
+                "houses": [
+                    "1",
+                    "2",
+                    "8",
+                    "10",
+                    "12",
+                    "14",
+                    "16",
+                    "18",
+                    "20",
+                    "22",
+                    "24",
+                    "26",
+                    "28",
+                    "30",
+                    "32",
+                    "34",
+                    "15",
+                    "17",
+                    "19",
+                    "21",
+                    "23",
+                    "25",
+                    "27",
+                    "29",
+                    "31",
+                    "33",
+                    "35",
+                ],
+                "times": [(datetime(2024, 3, 21, 8, 0), datetime(2024, 3, 21, 16, 0))],
+            },
+            {
+                "address": "ул. Агатовая",
+                "houses": [
+                    "1",
+                    "3",
+                    "4",
+                    "8",
+                    "10",
+                    "12",
+                    "16",
+                    "18",
+                    "20",
+                    "24",
+                    "26",
+                    "28",
+                    "32",
+                    "33",
+                    "55",
+                    "69",
+                    "71",
+                    "кад681",
+                ],
+                "times": [(datetime(2024, 3, 21, 8, 0), datetime(2024, 3, 21, 16, 0))],
+            },
+            {
+                "address": "ул. Эдельвейсовая",
+                "houses": ["37"],
+                "times": [(datetime(2024, 3, 21, 8, 0), datetime(2024, 3, 21, 16, 0))],
             },
         ]
