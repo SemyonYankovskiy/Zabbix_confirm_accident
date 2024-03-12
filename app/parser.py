@@ -83,6 +83,14 @@ class ContentParser:  # pylint: disable=too-few-public-methods
             self._town = town_math.group(1)
             raise self.SkipIterationException
 
+    def _check_keyword(self, tag: bs4.Tag) -> None:
+        keywords = ["профилактическим", "ремонтом", "подстанции"]
+        # Разделяем строку на слова
+        words_in_string = tag.text.split()
+        # Проверяем, есть ли хотя бы одно слово из массива в переменной
+        if any(word in keywords for word in words_in_string):
+            raise self.SkipIterationException
+
     def _check_tag(self, tag: bs4.Tag) -> None:
         if tag.name not in ("p", "div"):
             raise self.SkipIterationException
@@ -135,6 +143,7 @@ class ContentParser:  # pylint: disable=too-few-public-methods
 
     def _process_tag(self, tag):
         try:
+            self._check_keyword(tag)
             self._check_tag(tag)
             tag_text = re.sub("\xa0", " ", tag.text.strip()) if tag.text else ""
 
