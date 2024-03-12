@@ -30,7 +30,6 @@ def house_splitter(houses: str) -> List[str]:
     >>> house_splitter("2-6,19б/1,9-а")
     ['2', '4', '6', '19б/1', '9а']
     """
-
     houses = re.sub(r"\(.*?\)", "", houses)
     arr = list(houses.split(","))
     clean_address = []
@@ -58,6 +57,9 @@ def house_splitter(houses: str) -> List[str]:
 
     clean_ext_address = []
     for item in ext_address:
+        item = re.sub(r'\«[^\"]*\»', '', item)
+        item = item.replace("АО", "")
+        item = item.replace("–", "")
         item = item.replace("-", "")
         item = item.replace(" ", "")
 

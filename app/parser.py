@@ -146,7 +146,6 @@ class ContentParser:  # pylint: disable=too-few-public-methods
 
     def _process_tag(self, tag):
         try:
-            print(tag)
             self._check_keyword(tag)
             self._check_tag(tag)
             tag_text = re.sub("\xa0", " ", tag.text.strip()) if tag.text else ""

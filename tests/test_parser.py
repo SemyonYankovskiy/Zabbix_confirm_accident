@@ -1057,6 +1057,108 @@ class TestParser8(TestParser):
 class TestParser9(TestParser):
     @classmethod
     def setUpClass(cls):
+        cls.url = (
+            "https://sevenergo.net/news/kalendar-otklyuchenij-elektroenergii/725.html"
+        )
+        cls.valid = [
+            {
+                "address": "ул. Песочная",
+                "houses": ["33"],
+                "times": [
+                    (
+                        datetime(2024, 3, 15, 8, 0),
+                        datetime(2024, 3, 15, 17, 0),
+                    )
+                ],
+            },
+            {
+                "address": "ул. Земляничная",
+                "houses": ["14", "14А", "16", "18", "20", "24А", "26", "28", "30"],
+                "times": [
+                    (
+                        datetime(2024, 3, 15, 8, 0),
+                        datetime(2024, 3, 15, 17, 0),
+                    )
+                ],
+            },
+            {
+                "address": "ул. Аланская",
+                "houses": ["25", "33", "35", "37", "39", "45", "47", "51"],
+                "times": [
+                    (
+                        datetime(2024, 3, 15, 8, 0),
+                        datetime(2024, 3, 15, 17, 0),
+                    )
+                ],
+            },
+            {
+                "address": "ул. Легионная",
+                "houses": [
+                    "3",
+                    "7",
+                    "8",
+                    "12",
+                    "13",
+                    "15",
+                    "16",
+                    "17",
+                    "18",
+                    "19",
+                    "20",
+                ],
+                "times": [
+                    (
+                        datetime(2024, 3, 15, 8, 0),
+                        datetime(2024, 3, 15, 17, 0),
+                    )
+                ],
+            },
+            {
+                "address": "ул. Генерала Витмера",
+                "houses": ["17", "25"],
+                "times": [
+                    (
+                        datetime(2024, 3, 15, 8, 0),
+                        datetime(2024, 3, 15, 17, 0),
+                    )
+                ],
+            },
+            {
+                "address": "ул. Строительная – ГК Сокол",
+                "houses": [],
+                "times": [
+                    (
+                        datetime(2024, 3, 15, 8, 0),
+                        datetime(2024, 3, 15, 17, 0),
+                    )
+                ],
+            },
+            {
+                "address": "ул. Вакуленчука",
+                "houses": ["41/1", "41/3"],
+                "times": [
+                    (
+                        datetime(2024, 3, 15, 8, 0),
+                        datetime(2024, 3, 15, 17, 0),
+                    )
+                ],
+            },
+            {
+                "address": "Фиолентовское шоссе",
+                "houses": ["1В"],
+                "times": [
+                    (
+                        datetime(2024, 3, 15, 8, 0),
+                        datetime(2024, 3, 15, 17, 0),
+                    )
+                ],
+            },
+        ]
+
+
+class TestParser10(TestParser):
+    @classmethod
+    def setUpClass(cls):
         cls.url = "https://sevenergo.net/news/kalendar-otklyuchenij-elektroenergii/729.html"
         cls.valid = [
             {
