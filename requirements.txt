@@ -6,4 +6,5 @@ geopy
 pyzabbix
 pika
 orjson
+charset-normalizer
 schedule
