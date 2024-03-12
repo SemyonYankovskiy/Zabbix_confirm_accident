@@ -63,12 +63,13 @@ class ContentParser:  # pylint: disable=too-few-public-methods
     def _process_strong_tag(self, tag: bs4.Tag):
         tag_text = tag.text.strip()
         strong_tag = tag.find("strong")
+        strong_tag_text = strong_tag.text.strip()
 
-        if not re.search(r"\d", tag_text):
+        if not re.search(r"\d", tag_text) and strong_tag_text == tag_text:
             # Если нет ни одной цифры в тексте тега, значит это название поселка (села).
             self._find_and_set_new_town(r"([а-яА-Я. ]+)", tag_text)
 
-        if strong_tag and strong_tag.text.strip() and strong_tag.text != tag_text:
+        if strong_tag and strong_tag.text.strip() and strong_tag_text != tag_text:
             # Если текст, который в теге <strong> не содержит весь текст тега,
             # то это означает, что в теге имеется как указание поселка, так и его улицы.
             # Необходимо рассматривать этот тег далее без префикса населенного пункта.
@@ -152,12 +153,12 @@ class ContentParser:  # pylint: disable=too-few-public-methods
             # Если в теге имеется тег <strong>, значит необходимо выполнить отдельную проверку
             if "strong" in str(tag) and tag_text:
                 self._process_strong_tag(tag)
-
             elif tag_text:
                 # Ищем село или поселок в тексте тега.
                 # Также учитываем возможную ошибку символа с на англ. и рус.
                 self._find_and_set_new_town(r"(?:[cс]\.|по[cс]\.|г\.|п\.)\s*([а-яА-Я]+)[:;]?$", tag_text)
 
+            print("tag_text", tag_text)
             self._process_town(tag)
             self._find_addresses(tag_text)
 

@@ -1038,7 +1038,7 @@ class TestParser8(TestParser):
         )
         cls.valid = [
             {
-                "address": "Доковая балка, ТСН СНТ «Садоводческий»",
+                "address": "Доковая балка – СНТ Садоводческий",
                 "houses": [],
                 "times": [
                     (
