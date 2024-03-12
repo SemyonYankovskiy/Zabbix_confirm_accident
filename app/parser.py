@@ -115,13 +115,12 @@ class ContentParser:  # pylint: disable=too-few-public-methods
             # что данная запись относится к ранее указанному населенному пункту.
             self._town_children_under_padding = True
 
-        elif self._town and self._town_children_under_padding:
+        elif self._town_children_under_padding:
             # Если имеется ранее указанный населенный пункт и требуется искать улицу в отступе, но его нет,
             # значит будем учитывать, что последующие записи населенного пункта будут до следующей пустой строчки.
             self._town_children_under_padding = False
-            self._town = ""
-        elif self._town_children_under_padding:
-            self._town_children_under_padding = False
+            if self._town:
+                self._town = ""
 
         if self._town and not self._town_children_under_padding:
             # Если нет отступа, то будем учитывать,
