@@ -42,7 +42,7 @@ def has_outages(input_address: Tuple[str, str], check_datetime: datetime, json_f
             if house_match is not None:
                 has_house = house_match.group(0) in item.get("houses", [])
 
-        if not (has_street or has_house):
+        if not (has_street and has_house):
             continue
 
         for datetime_range in item.get("times", []):
