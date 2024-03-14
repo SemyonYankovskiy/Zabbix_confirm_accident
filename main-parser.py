@@ -77,19 +77,22 @@ def parse_outages():
 
 
 def main():
-    parse_outages()
-    create_geojson.run()  # Создаем геоданные.
-
-    # Отправляем данные.
-    api = API(
-        url=get_environ("ECSTASY_API_URL"),
-        username=get_environ("ECSTASY_API_USERNAME"),
-        password=get_environ("ECSTASY_API_PASSWORD"),
-    )
     try:
-        api.update_layer(get_environ("ECSTASY_LAYER_NAME"), f"outages/{date.today()}.geojson")
-    except UnauthorizedException as exc:
-        logging.error("Неудачная попытка обновления геоданных: %s", exc)
+        parse_outages()
+        create_geojson.run()  # Создаем геоданные.
+
+        # Отправляем данные.
+        api = API(
+            url=get_environ("ECSTASY_API_URL"),
+            username=get_environ("ECSTASY_API_USERNAME"),
+            password=get_environ("ECSTASY_API_PASSWORD"),
+        )
+        try:
+            api.update_layer(get_environ("ECSTASY_LAYER_NAME"), f"outages/{date.today()}.geojson")
+        except UnauthorizedException as exc:
+            logging.error("Неудачная попытка обновления геоданных: %s", exc)
+    except Exception as exc:
+        logging.error("Ошибка: %s", exc)
 
 
 if __name__ == "__main__":
