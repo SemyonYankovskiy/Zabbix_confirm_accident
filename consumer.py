@@ -33,6 +33,7 @@ def message_callback(
 
     text_outages = has_outages((street, house), datetime.now(), file_data)
     if text_outages:
+        print("Outages found:", text_outages)
         event_acknowledge(event_id, text_outages)
 
 
