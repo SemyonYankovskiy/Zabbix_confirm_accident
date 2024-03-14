@@ -29,7 +29,7 @@ def message_callback(
     if not (street or house or event_id or host_name):
         return
 
-    file_data = cache.get_or_cache(60 * 60, json_opener, f"{date.today()}.json")
+    file_data = cache.get_or_cache(60 * 60, json_opener, f"outages/{date.today()}.json")
 
     text_outages = has_outages((street, house), datetime.now(), file_data)
     if text_outages:
