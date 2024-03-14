@@ -4,6 +4,7 @@ services:
 
   parser: &base
     image: zabbix-confirm-accident:0.1
+    restart: always
     build:
       context: .
       dockerfile: Dockerfile
@@ -16,10 +17,11 @@ services:
   consumer:
     <<: *base
     command: consumer.py
+    restart: always
     extra_hosts:
       - "${EXTRA_HOST}"
     volumes:
-      - "./outages:/app/outages"
+      - "outages:/app/outages"
       - "./certs:/app/certs:ro"
     environment:
       RABBITMQ_CACERT: "/app/certs/root.crt"
