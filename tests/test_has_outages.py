@@ -166,13 +166,13 @@ class TestAddressToVerboseConverter(TestCase):
         #  Содержимое файла
         list_of_outages = [
             {
-                "address": "с. Терновка, ул. Ленина",
-                "houses": ["1"],
+                "address": "ул. Хрусталева",
+                "houses": ["179", "181", "183"],
                 "times": [[f"{date.today()} 08:00:00", f"{date.today()} 16:00:00"]],
             }
         ]
 
-        address_from_zabbix = (r"Терновка(.+?)Ленина", "1/5")
+        address_from_zabbix = (r"Хрусталева", "183/1")
         valid = "Плановые работы СЭ: с 08:00 до 16:00"
 
         result = has_outages(address_from_zabbix, datetime.now(), list_of_outages)

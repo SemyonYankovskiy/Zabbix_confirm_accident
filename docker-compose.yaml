@@ -13,6 +13,8 @@ services:
       - ".env"
     volumes:
       - "outages:/app/outages"
+      - "/etc/timezone:/etc/timezone:ro"
+      - "/etc/localtime:/etc/localtime:ro"
 
   consumer:
     <<: *base
@@ -23,6 +25,8 @@ services:
     volumes:
       - "outages:/app/outages"
       - "./certs:/app/certs:ro"
+      - "/etc/timezone:/etc/timezone:ro"
+      - "/etc/localtime:/etc/localtime:ro"
     environment:
       RABBITMQ_CACERT: "/app/certs/root.crt"
       RABBITMQ_CERTFILE: "/app/certs/client.crt"
