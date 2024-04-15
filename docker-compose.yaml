@@ -1,4 +1,4 @@
-version: "3"
+version: "2.2"
 
 services:
 
@@ -8,6 +8,9 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    mem_limit: 128m
+    cpuset: "3"
+    cpus: 0.2
     command: main-parser.py
     env_file:
       - ".env"
