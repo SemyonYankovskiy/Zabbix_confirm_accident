@@ -140,7 +140,7 @@ def current_str_to_datetime_ranges(input_str: str) -> List[Tuple[datetime, datet
     current_year = datetime.now().year
 
     day_and_months = re.search(
-        r"(\d.*?) +(января|февраля|марта|апреля|мая|июня|июля|августа|сентрября|октября|ноября|декабря)",
+        r"(\d.*?) +(января|февраля|марта|апреля|мая|июня|июля|августа|сентября|октября|ноября|декабря)",
         input_str,
     )
     day = day_and_months.group(1) if day_and_months else ""
