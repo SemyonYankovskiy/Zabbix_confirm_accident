@@ -5,6 +5,8 @@
 Перед запуском нужно создать файл `.env` и указать в нём 
 переменные окружения, которые обозначены в `env.sample`
 
+    PROXY                   # URL для проксирования подключений к sevenergo и yandex картам
+
     EXTRA_HOST              # Для соответствия домена и IP адреса RabbitMQ в формате: domain:ip
 
     RABBITMQ_USER           # Пользователь RabbitMQ

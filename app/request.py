@@ -1,3 +1,4 @@
+import os
 import random
 
 import requests
@@ -18,8 +19,17 @@ USER_AGENTS = [
 ]
 
 
+def get_proxy() -> dict | None:
+    proxy_url = os.getenv("PROXY")
+    if proxy_url:
+        return {"http": proxy_url, "https": proxy_url}
+    else:
+        return None
+
+
 def request_get(url: str) -> requests.Response:
     """Делает GET запрос со случайным User-Agent."""
+
     return requests.get(
-        url, headers={"User-Agent": random.choice(USER_AGENTS)}, timeout=5
+        url, headers={"User-Agent": random.choice(USER_AGENTS)}, timeout=5, proxies=get_proxy()
     )

@@ -5,7 +5,7 @@ from dataclasses import dataclass
 
 import requests
 
-from app.request import USER_AGENTS
+from app.request import USER_AGENTS, get_proxy
 
 
 @dataclass
@@ -44,6 +44,7 @@ class YaMap:
                 "User-Agent": random.choice(USER_AGENTS),
             },
             timeout=10,
+            proxies=get_proxy(),
         )
         if resp.status_code != 200:
             print(address, resp.status_code, resp.url, resp.text)
@@ -53,7 +54,8 @@ class YaMap:
         return float(position[1]), float(position[0])
 
     def suggest_address(self, address: str) -> str:
-        resp = self._session.get(self._suggest_url + "?" + SuggestParams(part=address).get_param_string())
+        url = self._suggest_url + "?" + SuggestParams(part=address).get_param_string()
+        resp = self._session.get(url, proxies=get_proxy(), timeout=10)
         if resp.status_code != 200:
             return ""
         data = json.loads(re.sub(r"^id_\d+\(|\)$", "", resp.text))

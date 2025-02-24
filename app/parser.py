@@ -241,7 +241,7 @@ def get_planned_outage_data(url: str) -> Optional[Tuple[str, bs4.Tag]]:
 def get_current_outages_urls() -> List[str]:
     links_for_today = []
 
-    resp = requests.get("https://sevenergo.net/news/incident.html", timeout=10)
+    resp = request_get("https://sevenergo.net/news/incident.html")
     if resp.status_code == 200:
         today = date.today()
 
