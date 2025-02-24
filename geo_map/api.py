@@ -36,7 +36,7 @@ class API:
     @auth_decorator
     def update_layer(self, layer_name: str, file_path: str) -> None:
         layer_id = None
-        resp = self.session.get(f"{self.url}/maps/api/layers?name={layer_name}")
+        resp = self.session.get(f"{self.url}/api/v1/maps/layers?name={layer_name}")
         if resp.status_code in [401, 403]:
             raise UnauthorizedException(resp.text)
 
@@ -48,6 +48,6 @@ class API:
 
         if layer_id is not None:
             with open(file_path, "rb") as f:
-                resp = self.session.patch(f"{self.url}/maps/api/layers/{layer_id}/", files={"from_file": f})
+                resp = self.session.patch(f"{self.url}/api/v1/maps/layers/{layer_id}/", files={"from_file": f})
                 if resp.status_code in [401, 403]:
                     raise UnauthorizedException(resp.text)
